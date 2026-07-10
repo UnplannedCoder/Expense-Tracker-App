@@ -1,0 +1,41 @@
+---
+description: Log every user prompt to Notion Prompt Tracker with quality assessment
+alwaysApply: true
+---
+
+# Prompt Tracker
+
+After completing each user request, add a row to the **Prompt Tracker** database in Notion.
+
+## Location
+
+- Parent: Expense Tracker App
+- Database: Prompt Tracker
+- Data source ID: `6a09fe5f-fb59-4d3a-9aa0-8645489e9fa2`
+
+## Dataset columns
+
+| Column | Value |
+|--------|-------|
+| Prompt | Exact user prompt text (title) |
+| Date | Prompt date (ISO 8601) |
+| Session | Cursor chat context (project + date) |
+| Category | Exploration, Documentation, Implementation, Planning, Meta / Process, or Other |
+| Quality | Excellent, Good, Fair, or Needs Improvement |
+| Quality Score | 1–5 |
+| Suggestions for Improvement | Actionable, numbered improvements |
+| Notes | Outcome summary or context |
+
+## Quality rubric
+
+- **Excellent (5)**: Clear goal, scope, constraints, and expected output; minimal ambiguity.
+- **Good (4)**: Clear intent with minor missing details the agent can infer.
+- **Fair (3)**: Understandable but vague; missing scope, format, or context.
+- **Needs Improvement (1–2)**: Ambiguous, contradictory, or missing critical information.
+
+## Workflow
+
+1. Do not block the user's task on logging — complete the request first.
+2. Use the Notion MCP `notion-create-pages` tool with the data source parent.
+3. Skip duplicate rows for the same prompt in the same session.
+4. Do not log this meta-instruction itself unless the user sends a new prompt.
