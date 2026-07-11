@@ -1,6 +1,7 @@
 const Chat = require('../models/Chat');
 const { sendMessageToGemini } = require('../services/geminiService');
 const { buildFinancialContext } = require('../services/financialContextService');
+const { buildMarketContext, detectMarketIntent } = require('../services/marketDataService');
 
 /**
  * chatController.js
@@ -50,8 +51,22 @@ const sendMessage = async (req, res, next) => {
     // Reverse so oldest is first (chronological order for Gemini)
     const conversationHistory = history.reverse();
 
-    // --- Build personalized financial context ---
-    const financialContext = await buildFinancialContext(userId);
+    // --- Detect market intent early so we can log and gate the fetch ---
+    const { isMarketQuery, detectedTerms } = detectMarketIntent(trimmedMessage);
+    if (isMarketQuery) {
+      console.log(`[FinBot] Market query detected. Terms: ${detectedTerms.slice(0, 5).join(', ')}`);
+    }
+
+    // --- Fetch financial context + market context in parallel ---
+    const [financialContext, marketContext] = await Promise.all([
+      buildFinancialContext(userId),
+      isMarketQuery ? buildMarketContext(trimmedMessage) : Promise.resolve(null),
+    ]);
+
+    // --- Combine contexts: financial first, then live market data ---
+    const combinedContext = [financialContext, marketContext]
+      .filter(Boolean)
+      .join('\n\n');
 
     // --- Save user message to DB ---
     await Chat.create({
@@ -60,8 +75,8 @@ const sendMessage = async (req, res, next) => {
       message: trimmedMessage,
     });
 
-    // --- Send to Gemini ---
-    const aiResponse = await sendMessageToGemini(trimmedMessage, financialContext, conversationHistory);
+    // --- Send to Gemini with combined context ---
+    const aiResponse = await sendMessageToGemini(trimmedMessage, combinedContext, conversationHistory);
 
     // --- Save AI response to DB ---
     const savedResponse = await Chat.create({

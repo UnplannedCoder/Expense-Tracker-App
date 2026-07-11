@@ -4,8 +4,8 @@ import RobotAvatar from './RobotAvatar';
 
 /**
  * Minimal markdown-to-JSX renderer.
- * Handles: **bold**, *italic*, bullet lists (- item), numbered lists, `code`, and line breaks.
- * Kept intentionally simple — no external markdown library needed.
+ * Handles: ## headings, **bold**, *italic*, `code`, bullet lists,
+ * numbered lists, --- dividers, and line breaks.
  */
 const renderMarkdown = (text) => {
   if (!text) return null;
@@ -17,6 +17,35 @@ const renderMarkdown = (text) => {
   while (i < lines.length) {
     const line = lines[i];
 
+    // H2 heading: ## Title
+    if (/^##\s/.test(line)) {
+      elements.push(
+        <h2 key={`h2-${i}`} className="text-sm font-bold text-slate-800 dark:text-slate-100 mt-3 mb-1.5 border-b border-slate-100 dark:border-slate-700 pb-1">
+          {inlineMarkdown(line.replace(/^##\s/, ''))}
+        </h2>
+      );
+      i++;
+      continue;
+    }
+
+    // H3 heading: ### Title
+    if (/^###\s/.test(line)) {
+      elements.push(
+        <h3 key={`h3-${i}`} className="text-xs font-bold text-slate-700 dark:text-slate-200 mt-2 mb-1">
+          {inlineMarkdown(line.replace(/^###\s/, ''))}
+        </h3>
+      );
+      i++;
+      continue;
+    }
+
+    // Horizontal rule: ---
+    if (/^---+$/.test(line.trim())) {
+      elements.push(<hr key={`hr-${i}`} className="border-slate-100 dark:border-slate-700 my-2" />);
+      i++;
+      continue;
+    }
+
     // Bullet list item
     if (/^[-*]\s/.test(line)) {
       const listItems = [];
@@ -25,11 +54,11 @@ const renderMarkdown = (text) => {
         i++;
       }
       elements.push(
-        <ul key={`ul-${i}`} className="list-none space-y-1 my-1">
+        <ul key={`ul-${i}`} className="list-none space-y-1.5 my-1.5">
           {listItems.map((item, idx) => (
             <li key={idx} className="flex items-start gap-2">
-              <span className="text-indigo-400 mt-0.5 flex-shrink-0">•</span>
-              <span>{inlineMarkdown(item)}</span>
+              <span className="text-indigo-400 mt-0.5 flex-shrink-0 text-xs">•</span>
+              <span className="text-sm leading-relaxed">{inlineMarkdown(item)}</span>
             </li>
           ))}
         </ul>
@@ -45,11 +74,11 @@ const renderMarkdown = (text) => {
         i++;
       }
       elements.push(
-        <ol key={`ol-${i}`} className="list-none space-y-1 my-1">
+        <ol key={`ol-${i}`} className="list-none space-y-1.5 my-1.5">
           {listItems.map((item, idx) => (
             <li key={idx} className="flex items-start gap-2">
-              <span className="text-indigo-400 font-semibold flex-shrink-0 min-w-[1.2rem]">{idx + 1}.</span>
-              <span>{inlineMarkdown(item)}</span>
+              <span className="text-indigo-400 font-semibold flex-shrink-0 min-w-[1.2rem] text-sm">{idx + 1}.</span>
+              <span className="text-sm leading-relaxed">{inlineMarkdown(item)}</span>
             </li>
           ))}
         </ol>
@@ -57,16 +86,27 @@ const renderMarkdown = (text) => {
       continue;
     }
 
-    // Empty line
+    // Empty line — small spacer
     if (line.trim() === '') {
       elements.push(<div key={`br-${i}`} className="h-1" />);
       i++;
       continue;
     }
 
+    // Italic-only line (disclaimer / note lines that start with *)
+    if (/^\*[^*]/.test(line.trim()) && line.trim().endsWith('*')) {
+      elements.push(
+        <p key={`italic-${i}`} className="text-xs text-slate-400 dark:text-slate-500 italic leading-relaxed">
+          {inlineMarkdown(line.trim().slice(1, -1))}
+        </p>
+      );
+      i++;
+      continue;
+    }
+
     // Regular paragraph
     elements.push(
-      <p key={`p-${i}`} className="leading-relaxed">
+      <p key={`p-${i}`} className="text-sm leading-relaxed text-slate-700 dark:text-slate-200">
         {inlineMarkdown(line)}
       </p>
     );
@@ -78,12 +118,12 @@ const renderMarkdown = (text) => {
 
 /**
  * Process inline markdown within a single line:
- * **bold**, *italic*, `code`
+ * **bold**, *italic*, `code`, [link](url)
  */
 const inlineMarkdown = (text) => {
   const parts = [];
-  // Split on **bold**, *italic*, `code`
-  const regex = /(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`)/g;
+  // Match bold, italic, inline code, and markdown links
+  const regex = /(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`|\[[^\]]+\]\([^)]+\))/g;
   let lastIndex = 0;
   let match;
 
@@ -93,15 +133,35 @@ const inlineMarkdown = (text) => {
     }
     const token = match[0];
     if (token.startsWith('**')) {
-      parts.push(<strong key={match.index} className="font-semibold">{token.slice(2, -2)}</strong>);
+      parts.push(
+        <strong key={match.index} className="font-semibold text-slate-800 dark:text-slate-100">
+          {token.slice(2, -2)}
+        </strong>
+      );
     } else if (token.startsWith('*')) {
-      parts.push(<em key={match.index}>{token.slice(1, -1)}</em>);
+      parts.push(<em key={match.index} className="italic text-slate-500 dark:text-slate-400">{token.slice(1, -1)}</em>);
     } else if (token.startsWith('`')) {
       parts.push(
         <code key={match.index} className="bg-slate-100 dark:bg-slate-700 text-indigo-600 dark:text-indigo-300 px-1.5 py-0.5 rounded text-xs font-mono">
           {token.slice(1, -1)}
         </code>
       );
+    } else if (token.startsWith('[')) {
+      // Markdown link: [label](url)
+      const labelMatch = token.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
+      if (labelMatch) {
+        parts.push(
+          <a
+            key={match.index}
+            href={labelMatch[2]}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-indigo-500 dark:text-indigo-400 underline underline-offset-2 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors"
+          >
+            {labelMatch[1]}
+          </a>
+        );
+      }
     }
     lastIndex = match.index + token.length;
   }

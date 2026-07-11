@@ -11,12 +11,13 @@ const budgetRoutes = require('./routes/budgetRoutes');
 const reportRoutes = require('./routes/reportRoutes');
 const chatRoutes = require('./routes/chatRoutes');
 const groupRoutes = require('./routes/groupRoutes');
+const imageRoutes = require('./routes/imageRoutes');
 
 const app = express();
 
 // Middlewares
 app.use(helmet());
-app.use(express.json());
+app.use(express.json({ limit: '10mb' })); // 10mb for base64 image uploads
 
 // Enable CORS for frontend client
 app.use(
@@ -48,6 +49,7 @@ app.use('/api/v1/budgets', budgetRoutes);
 app.use('/api/v1/reports', reportRoutes);
 app.use('/api/v1/chat', chatRoutes);
 app.use('/api/v1/groups', groupRoutes);
+app.use('/api/v1/image', imageRoutes);
 
 // Error Handler Middleware
 app.use(errorHandler);

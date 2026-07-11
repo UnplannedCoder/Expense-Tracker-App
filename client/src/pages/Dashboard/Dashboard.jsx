@@ -22,6 +22,7 @@ import {
 import api from '../../services/api';
 import { AuthContext } from '../../context/AuthContext';
 import IconHelper from '../../components/common/IconHelper';
+import ImageAnalyzer from '../../components/ImageAnalyzer';
 
 const Dashboard = () => {
   const { user } = useContext(AuthContext);
@@ -193,6 +194,9 @@ const Dashboard = () => {
           </p>
         </div>
       </div>
+
+      {/* Smart Expense Analyzer — photo upload to auto-extract financials */}
+      <ImageAnalyzer />
 
       {/* Visual Analytics */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
