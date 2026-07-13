@@ -3,9 +3,10 @@ import {
   FaUpload, FaCamera, FaTimes, FaSpinner, FaCheckCircle,
   FaExclamationTriangle, FaChevronDown, FaChevronUp,
   FaWallet, FaArrowUp, FaArrowDown, FaPiggyBank, FaRedo,
-  FaFileImage,
+  FaFileImage, FaFilePdf,
 } from 'react-icons/fa';
 import api from '../services/api';
+import { pdfToText } from '../utils/pdfToText';
 
 /**
  * ImageAnalyzer
@@ -16,7 +17,7 @@ import api from '../services/api';
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
-const MAX_FILE_MB = 6;
+const MAX_FILE_MB = 10;
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -65,11 +66,14 @@ const ImageAnalyzer = () => {
   const [isOpen,     setIsOpen]     = useState(false);
   const [status,     setStatus]     = useState('idle'); // idle | uploading | done | error
   const [previewUrl, setPreviewUrl] = useState(null);
+  const [isPdf,      setIsPdf]      = useState(false);
+  const [pdfName,    setPdfName]    = useState('');
   const [result,     setResult]     = useState(null);
   const [errorMsg,   setErrorMsg]   = useState('');
   const [showTxns,   setShowTxns]   = useState(false);
 
   const fileInputRef   = useRef(null);
+  const pdfInputRef    = useRef(null);
   const cameraInputRef = useRef(null);
 
   // ── Process selected file ───────────────────────────────────────────────
@@ -78,30 +82,61 @@ const ImageAnalyzer = () => {
 
     // Size check
     if (file.size > MAX_FILE_MB * 1024 * 1024) {
-      setErrorMsg(`Image is too large. Please use a file under ${MAX_FILE_MB}MB.`);
+      setErrorMsg(`File is too large. Please use a file under ${MAX_FILE_MB}MB.`);
       setStatus('error');
       return;
     }
 
-    // Show preview immediately
-    const dataUrl = await fileToBase64(file);
-    setPreviewUrl(dataUrl);
+    const filePdf = file.type === 'application/pdf';
+    setIsPdf(filePdf);
+    setPdfName(filePdf ? file.name : '');
+    setPreviewUrl(filePdf ? null : null); // will be set below for images
     setStatus('uploading');
     setErrorMsg('');
     setResult(null);
 
     try {
-      // Strip "data:<mime>;base64," prefix → send raw base64 + mime separately
-      const [header, base64] = dataUrl.split(',');
-      const mimeType = header.match(/data:([^;]+)/)?.[1] || 'image/jpeg';
+      if (filePdf) {
+        // ── PDF path: extract text client-side, send as plain text ──────
+        // This avoids the OpenRouter paid-tier requirement for file uploads
+        let extractedText;
+        try {
+          extractedText = await pdfToText(file);
+        } catch {
+          throw new Error('Could not read this PDF. Make sure it contains selectable text (not a scanned image).');
+        }
 
-      const res = await api.post('/image/analyze', { image: base64, mimeType });
+        if (!extractedText || extractedText.trim().length < 20) {
+          throw new Error('This PDF appears to be a scanned image with no text layer. Please take a photo of it using "Take Photo" or "Upload Image" instead.');
+        }
 
-      if (res.data.success) {
-        setResult(res.data.data);
-        setStatus('done');
+        const res = await api.post('/image/analyze-text', {
+          text: extractedText,
+          filename: file.name,
+        });
+
+        if (res.data.success) {
+          setResult(res.data.data);
+          setStatus('done');
+        } else {
+          throw new Error(res.data.message || 'Analysis failed');
+        }
       } else {
-        throw new Error(res.data.message || 'Analysis failed');
+        // ── Image path: base64 encode and send as vision request ─────────
+        const dataUrl = await fileToBase64(file);
+        setPreviewUrl(dataUrl);
+
+        const [header, base64] = dataUrl.split(',');
+        const mimeType = header.match(/data:([^;]+)/)?.[1] || 'image/jpeg';
+
+        const res = await api.post('/image/analyze', { image: base64, mimeType });
+
+        if (res.data.success) {
+          setResult(res.data.data);
+          setStatus('done');
+        } else {
+          throw new Error(res.data.message || 'Analysis failed');
+        }
       }
     } catch (err) {
       const msg = err.response?.data?.message || err.message || 'Something went wrong. Please try again.';
@@ -120,6 +155,8 @@ const ImageAnalyzer = () => {
   const handleReset = () => {
     setStatus('idle');
     setPreviewUrl(null);
+    setIsPdf(false);
+    setPdfName('');
     setResult(null);
     setErrorMsg('');
     setShowTxns(false);
@@ -169,29 +206,39 @@ const ImageAnalyzer = () => {
                 Upload a photo of your bank statement, salary slip, or a bundle of receipts.
                 Our AI will extract all income and expense data automatically.
               </p>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-3 gap-3">
                 {/* Camera */}
                 <button
                   onClick={() => cameraInputRef.current?.click()}
                   className="flex flex-col items-center gap-2.5 py-7 rounded-2xl border-2 border-dashed border-violet-200 dark:border-violet-800 text-violet-600 dark:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-950/30 transition text-sm font-medium"
                 >
-                  <FaCamera size={24} />
+                  <FaCamera size={22} />
                   <span>Take Photo</span>
                 </button>
                 <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={handleFileChange} />
 
-                {/* File upload */}
+                {/* Image upload */}
                 <button
                   onClick={() => fileInputRef.current?.click()}
                   className="flex flex-col items-center gap-2.5 py-7 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition text-sm font-medium"
                 >
-                  <FaUpload size={24} />
+                  <FaUpload size={22} />
                   <span>Upload Image</span>
                 </button>
                 <input ref={fileInputRef} type="file" accept="image/jpeg,image/png,image/webp,image/gif" className="hidden" onChange={handleFileChange} />
+
+                {/* PDF upload */}
+                <button
+                  onClick={() => pdfInputRef.current?.click()}
+                  className="flex flex-col items-center gap-2.5 py-7 rounded-2xl border-2 border-dashed border-rose-200 dark:border-rose-800 text-rose-500 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition text-sm font-medium"
+                >
+                  <FaFilePdf size={22} />
+                  <span>Upload PDF</span>
+                </button>
+                <input ref={pdfInputRef} type="file" accept="application/pdf" className="hidden" onChange={handleFileChange} />
               </div>
               <p className="text-xs text-center text-slate-400 dark:text-slate-500">
-                Supports JPG, PNG, WebP · Max {MAX_FILE_MB}MB · Powered by Gemini Vision AI
+                Supports JPG, PNG, WebP, PDF · Max {MAX_FILE_MB}MB · Powered by Gemini Vision AI
               </p>
             </>
           )}
@@ -199,8 +246,13 @@ const ImageAnalyzer = () => {
           {/* UPLOADING — spinner */}
           {status === 'uploading' && (
             <div className="space-y-4 text-center py-4">
-              {previewUrl && (
+              {previewUrl ? (
                 <img src={previewUrl} alt="Preview" className="mx-auto max-h-44 w-full object-contain rounded-xl border border-slate-200 dark:border-slate-700" />
+              ) : isPdf && (
+                <div className="mx-auto flex flex-col items-center justify-center gap-2 max-h-44 h-32 rounded-xl border border-rose-200 dark:border-rose-800 bg-rose-50 dark:bg-rose-950/20 text-rose-500 dark:text-rose-400">
+                  <FaFilePdf size={36} />
+                  <p className="text-xs font-medium truncate max-w-[200px]">{pdfName}</p>
+                </div>
               )}
               <div className="flex items-center justify-center gap-2 text-violet-600 dark:text-violet-400 font-medium text-sm">
                 <FaSpinner className="animate-spin" size={16} />
@@ -213,8 +265,13 @@ const ImageAnalyzer = () => {
           {/* ERROR */}
           {status === 'error' && (
             <div className="space-y-4">
-              {previewUrl && (
+              {previewUrl ? (
                 <img src={previewUrl} alt="Preview" className="mx-auto max-h-44 w-full object-contain rounded-xl border border-slate-200 dark:border-slate-700" />
+              ) : isPdf && (
+                <div className="mx-auto flex flex-col items-center justify-center gap-2 max-h-44 h-32 rounded-xl border border-rose-200 dark:border-rose-800 bg-rose-50 dark:bg-rose-950/20 text-rose-500 dark:text-rose-400">
+                  <FaFilePdf size={36} />
+                  <p className="text-xs font-medium truncate max-w-[200px]">{pdfName}</p>
+                </div>
               )}
               <div className="flex items-start gap-2 text-rose-600 dark:text-rose-400 text-sm font-medium bg-rose-50 dark:bg-rose-950/30 border border-rose-100 dark:border-rose-900/30 rounded-xl px-4 py-3">
                 <FaExclamationTriangle size={14} className="mt-0.5 flex-shrink-0" />
@@ -248,8 +305,13 @@ const ImageAnalyzer = () => {
               </div>
 
               {/* Preview thumbnail */}
-              {previewUrl && (
+              {previewUrl ? (
                 <img src={previewUrl} alt="Analysed document" className="w-full max-h-36 object-contain rounded-xl border border-slate-200 dark:border-slate-700" />
+              ) : isPdf && (
+                <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-rose-200 dark:border-rose-800 bg-rose-50 dark:bg-rose-950/20 text-rose-500 dark:text-rose-400">
+                  <FaFilePdf size={22} className="flex-shrink-0" />
+                  <p className="text-xs font-medium truncate">{pdfName}</p>
+                </div>
               )}
 
               {/* 4 summary cards */}
