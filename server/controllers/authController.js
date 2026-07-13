@@ -165,7 +165,31 @@ const updateUserProfile = async (req, res, next) => {
     if (user) {
       user.name = req.body.name || user.name;
       user.currency = req.body.currency || user.currency;
-      user.profileImage = req.body.profileImage || user.profileImage;
+
+      if (req.body.profileImage !== undefined) {
+        const profileImage = req.body.profileImage;
+
+        if (profileImage.startsWith('data:')) {
+          const allowedMimes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+          const mime = profileImage.match(/data:([^;]+)/)?.[1];
+          if (mime && !allowedMimes.includes(mime)) {
+            res.status(400);
+            throw new Error('Invalid image format. Use JPEG, PNG, WebP, or GIF.');
+          }
+
+          const base64Part = profileImage.split(',')[1];
+          if (base64Part) {
+            const sizeInBytes = Buffer.byteLength(base64Part, 'base64');
+            const maxSize = 2 * 1024 * 1024;
+            if (sizeInBytes > maxSize) {
+              res.status(400);
+              throw new Error('Profile image is too large. Maximum size is 2MB.');
+            }
+          }
+        }
+
+        user.profileImage = profileImage;
+      }
 
       const updatedUser = await user.save();
 
