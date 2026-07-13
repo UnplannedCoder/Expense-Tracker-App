@@ -61,7 +61,7 @@ const Settings = () => {
       </div>
 
       {/* Preferences Section */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm p-6 sm:p-8 space-y-4">
+      <div className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-2xl shadow-sm p-6 sm:p-8 space-y-4">
         <h2 className="text-base font-bold text-slate-800 dark:text-slate-100">App Preferences</h2>
         <div className="flex justify-between items-center py-3 border-t border-b border-slate-100 dark:border-slate-800">
           <div>
@@ -70,7 +70,7 @@ const Settings = () => {
           </div>
           <button
             onClick={toggleTheme}
-            className="flex items-center space-x-2 px-4 py-2 border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-700 dark:text-slate-350 rounded-xl text-sm font-semibold hover:bg-slate-100 dark:hover:bg-slate-900 transition"
+            className="flex items-center space-x-2 px-4 py-2 border border-slate-300 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-700 dark:text-slate-350 rounded-xl text-sm font-semibold hover:bg-slate-100 dark:hover:bg-slate-900 transition"
           >
             {theme === 'dark' ? (
               <>
@@ -88,7 +88,7 @@ const Settings = () => {
       </div>
 
       {/* Security Section (Change Password) */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm p-6 sm:p-8 space-y-6">
+      <div className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-2xl shadow-sm p-6 sm:p-8 space-y-6">
         <h2 className="text-base font-bold text-slate-800 dark:text-slate-100">Security Configuration</h2>
         
         {/* Feedback alerts */}
@@ -114,7 +114,7 @@ const Settings = () => {
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
               placeholder="••••••••"
-              className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl px-4 py-3 text-sm outline-none transition"
+              className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl px-4 py-3 text-sm outline-none transition"
               required
             />
           </div>
@@ -130,7 +130,7 @@ const Settings = () => {
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl px-4 py-3 text-sm outline-none transition"
+                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl px-4 py-3 text-sm outline-none transition"
                 required
               />
             </div>
@@ -145,7 +145,7 @@ const Settings = () => {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl px-4 py-3 text-sm outline-none transition"
+                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl px-4 py-3 text-sm outline-none transition"
                 required
               />
             </div>
@@ -156,7 +156,7 @@ const Settings = () => {
             <button
               type="submit"
               disabled={loading}
-              className="inline-flex items-center space-x-2 bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-3 rounded-xl font-semibold shadow-md shadow-indigo-600/10 transition duration-200 disabled:opacity-50 text-sm"
+              className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-3 rounded-xl font-semibold shadow-md shadow-indigo-600/10 transition duration-200 disabled:opacity-50 text-sm"
             >
               {loading ? (
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>

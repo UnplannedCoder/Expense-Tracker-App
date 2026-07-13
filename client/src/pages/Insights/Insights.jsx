@@ -26,12 +26,12 @@ const Tip = ({ active, payload, label, currency }) => {
 
 /* ─── stat card ───────────────────────────────────────────────────────────── */
 const Card = ({ label, value, sub, Icon, bg, color }) => (
-  <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-sm">
-    <div className="flex items-center justify-between mb-3">
-      <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">{label}</span>
-      <div className={`p-2.5 rounded-xl ${bg}`}><Icon size={15} className={color}/></div>
+  <div className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 p-4 sm:p-5 rounded-2xl shadow-sm">
+    <div className="flex items-center justify-between mb-2 sm:mb-3">
+      <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider leading-tight">{label}</span>
+      <div className={`p-2 rounded-xl flex-shrink-0 ${bg}`}><Icon size={13} className={color}/></div>
     </div>
-    <p className={`text-2xl font-extrabold ${color}`}>{value}</p>
+    <p className={`text-lg sm:text-2xl font-extrabold leading-tight truncate ${color}`}>{value}</p>
     {sub&&<p className="text-xs text-slate-400 mt-1">{sub}</p>}
   </div>
 );
@@ -91,27 +91,27 @@ const Analytics = () => {
   );
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* ── header + filters ─────────────────────────────────────────────── */}
-      <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
+      <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-100">Analytics</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-800 dark:text-slate-100">Analytics</h1>
           <p className="text-slate-500 dark:text-slate-400 text-sm">Deep insights into your spending patterns</p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex gap-2">
           <select value={selMonth} onChange={e=>setSelMonth(Number(e.target.value))}
-            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-sm outline-none focus:border-indigo-500 transition">
+            className="flex-1 sm:flex-none bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-xl px-3 py-2 text-sm outline-none focus:border-indigo-500 transition">
             {MONTHS.map((m,i)=><option key={m} value={i+1}>{m}</option>)}
           </select>
           <select value={selYear} onChange={e=>setSelYear(Number(e.target.value))}
-            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-sm outline-none focus:border-indigo-500 transition">
+            className="flex-1 sm:flex-none bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-xl px-3 py-2 text-sm outline-none focus:border-indigo-500 transition">
             {[currentYear, currentYear-1, currentYear-2].map(y=><option key={y} value={y}>{y}</option>)}
           </select>
         </div>
       </div>
 
       {/* ── KPI cards ─────────────────────────────────────────────────────── */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <Card label="Monthly Income"   value={formatMoney(monthly?.totalIncome||0,currency)}  sub={`${MONTHS[selMonth-1]} ${selYear}`} Icon={FaArrowUp}   bg="bg-emerald-500/10" color="text-emerald-600 dark:text-emerald-400"/>
         <Card label="Monthly Expense"  value={formatMoney(monthly?.totalExpense||0,currency)} sub={`${MONTHS[selMonth-1]} ${selYear}`} Icon={FaArrowDown}  bg="bg-rose-500/10"    color="text-rose-600 dark:text-rose-400"/>
         <Card label="Savings Rate"     value={`${savingsRate}%`}  sub="of income saved this month"  Icon={FaTrophy} bg="bg-indigo-500/10"  color="text-indigo-600 dark:text-indigo-400"/>
@@ -119,14 +119,14 @@ const Analytics = () => {
       </div>
 
       {/* ── yearly trend area chart ───────────────────────────────────────── */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-2xl shadow-sm">
-        <div className="flex items-center gap-2 mb-6">
-          <FaChartLine size={16} className="text-indigo-500"/>
-          <h3 className="font-bold text-slate-800 dark:text-slate-100">Income vs Expense Trend ({selYear})</h3>
+      <div className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 p-4 sm:p-6 rounded-2xl shadow-sm">
+        <div className="flex items-center gap-2 mb-4 sm:mb-6">
+          <FaChartLine size={15} className="text-indigo-500"/>
+          <h3 className="font-bold text-slate-800 dark:text-slate-100 text-sm sm:text-base">Income vs Expense Trend ({selYear})</h3>
         </div>
-        <div className="h-72">
+        <div className="h-56 sm:h-72">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={areaData} margin={{top:5,right:10,left:0,bottom:0}}>
+            <AreaChart data={areaData} margin={{top:5,right:5,left:-10,bottom:0}}>
               <defs>
                 <linearGradient id="gIncome" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%"  stopColor="#10b981" stopOpacity={0.25}/>
@@ -138,8 +138,8 @@ const Analytics = () => {
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" className="dark:stroke-slate-800"/>
-              <XAxis dataKey="name" stroke="#94a3b8" tick={{fontSize:12}}/>
-              <YAxis stroke="#94a3b8" tick={{fontSize:12}} width={60}
+              <XAxis dataKey="name" stroke="#94a3b8" tick={{fontSize:11}}/>
+              <YAxis stroke="#94a3b8" tick={{fontSize:11}} width={55}
                 tickFormatter={v=>v>=1000?`${(v/1000).toFixed(0)}k`:v}/>
               <Tooltip content={<Tip currency={currency}/>}/>
               <Legend wrapperStyle={{fontSize:'12px'}}/>
@@ -151,21 +151,21 @@ const Analytics = () => {
       </div>
 
       {/* ── monthly category breakdown + bar chart ────────────────────────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         {/* category pie */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-2xl shadow-sm">
-          <h3 className="font-bold text-slate-800 dark:text-slate-100 mb-5">
+        <div className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 p-4 sm:p-6 rounded-2xl shadow-sm">
+          <h3 className="font-bold text-slate-800 dark:text-slate-100 mb-4 sm:mb-5 text-sm sm:text-base">
             Spending by Category — {MONTHS[selMonth-1]}
           </h3>
           {topCats.length === 0 ? (
             <div className="h-48 flex items-center justify-center text-slate-400 text-sm">No expense data for this month.</div>
           ) : (
             <>
-              <div className="h-48">
+              <div className="h-44">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie data={topCats} dataKey="amount" nameKey="category"
-                      cx="50%" cy="50%" innerRadius={50} outerRadius={75} paddingAngle={3}>
+                      cx="50%" cy="50%" innerRadius={46} outerRadius={68} paddingAngle={3}>
                       {topCats.map((_,i)=><Cell key={i} fill={COLORS[i%COLORS.length]}/>)}
                     </Pie>
                     <Tooltip formatter={v=>formatMoney(v,currency)}
@@ -173,14 +173,14 @@ const Analytics = () => {
                   </PieChart>
                 </ResponsiveContainer>
               </div>
-              <div className="space-y-2 mt-4">
+              <div className="space-y-2 mt-3">
                 {topCats.map((c,i)=>(
-                  <div key={c.category} className="flex items-center justify-between text-xs">
-                    <div className="flex items-center gap-2">
+                  <div key={c.category} className="flex items-center justify-between text-xs gap-2">
+                    <div className="flex items-center gap-2 min-w-0">
                       <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{backgroundColor:COLORS[i%COLORS.length]}}/>
-                      <span className="text-slate-500 dark:text-slate-400">{c.category}</span>
+                      <span className="text-slate-500 dark:text-slate-400 truncate">{c.category}</span>
                     </div>
-                    <span className="font-bold text-slate-700 dark:text-slate-300">
+                    <span className="font-bold text-slate-700 dark:text-slate-300 flex-shrink-0">
                       {formatMoney(c.amount,currency)} <span className="font-normal text-slate-400">({c.percentage}%)</span>
                     </span>
                   </div>
@@ -191,11 +191,11 @@ const Analytics = () => {
         </div>
 
         {/* monthly bar */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-2xl shadow-sm">
-          <h3 className="font-bold text-slate-800 dark:text-slate-100 mb-5">Monthly Comparison ({selYear})</h3>
-          <div className="h-72">
+        <div className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 p-4 sm:p-6 rounded-2xl shadow-sm">
+          <h3 className="font-bold text-slate-800 dark:text-slate-100 mb-4 sm:mb-5 text-sm sm:text-base">Monthly Comparison ({selYear})</h3>
+          <div className="h-60 sm:h-72">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={areaData} margin={{top:5,right:5,left:0,bottom:0}}>
+              <BarChart data={areaData} margin={{top:5,right:5,left:-10,bottom:0}}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" className="dark:stroke-slate-800"/>
                 <XAxis dataKey="name" stroke="#94a3b8" tick={{fontSize:11}}/>
                 <YAxis stroke="#94a3b8" tick={{fontSize:11}} width={55}
@@ -211,22 +211,22 @@ const Analytics = () => {
       </div>
 
       {/* ── insights cards ────────────────────────────────────────────────── */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/40 rounded-2xl p-5">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+        <div className="bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/40 rounded-2xl p-4 sm:p-5">
           <p className="text-xs font-semibold text-indigo-500 uppercase tracking-wider mb-1">Yearly Net Savings</p>
-          <p className={`text-xl font-extrabold ${(yearly?.netSavings||0)>=0?'text-indigo-600 dark:text-indigo-400':'text-rose-600'}`}>
+          <p className={`text-lg sm:text-xl font-extrabold truncate ${(yearly?.netSavings||0)>=0?'text-indigo-600 dark:text-indigo-400':'text-rose-600'}`}>
             {formatMoney(yearly?.netSavings||0, currency)}
           </p>
           <p className="text-xs text-slate-400 mt-1">Income minus all expenses for {selYear}</p>
         </div>
-        <div className="bg-rose-50 dark:bg-rose-950/30 border border-rose-100 dark:border-rose-900/40 rounded-2xl p-5">
+        <div className="bg-rose-50 dark:bg-rose-950/30 border border-rose-100 dark:border-rose-900/40 rounded-2xl p-4 sm:p-5">
           <p className="text-xs font-semibold text-rose-500 uppercase tracking-wider mb-1">Highest Spending Month</p>
-          <p className="text-xl font-extrabold text-rose-600 dark:text-rose-400">{highestMonth?.name || '—'}</p>
+          <p className="text-lg sm:text-xl font-extrabold text-rose-600 dark:text-rose-400">{highestMonth?.name || '—'}</p>
           <p className="text-xs text-slate-400 mt-1">{highestMonth ? formatMoney(highestMonth.expense, currency) : 'No data'}</p>
         </div>
-        <div className="bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-100 dark:border-emerald-900/40 rounded-2xl p-5">
+        <div className="bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-100 dark:border-emerald-900/40 rounded-2xl p-4 sm:p-5">
           <p className="text-xs font-semibold text-emerald-500 uppercase tracking-wider mb-1">Best Savings Month</p>
-          <p className="text-xl font-extrabold text-emerald-600 dark:text-emerald-400">{bestSavingsMonth?.name || '—'}</p>
+          <p className="text-lg sm:text-xl font-extrabold text-emerald-600 dark:text-emerald-400">{bestSavingsMonth?.name || '—'}</p>
           <p className="text-xs text-slate-400 mt-1">{bestSavingsMonth ? formatMoney(bestSavingsMonth.savings, currency) : 'No data'}</p>
         </div>
       </div>

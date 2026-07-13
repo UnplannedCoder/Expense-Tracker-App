@@ -170,7 +170,7 @@ const ImageAnalyzer = () => {
   };
 
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden">
+    <div className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden">
 
       {/* ── Collapsible Header ─────────────────────────────────────────── */}
       <button
@@ -220,7 +220,7 @@ const ImageAnalyzer = () => {
                 {/* Image upload */}
                 <button
                   onClick={() => fileInputRef.current?.click()}
-                  className="flex flex-col items-center gap-2.5 py-7 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition text-sm font-medium"
+                  className="flex flex-col items-center gap-2.5 py-7 rounded-2xl border-2 border-dashed border-slate-300 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition text-sm font-medium"
                 >
                   <FaUpload size={22} />
                   <span>Upload Image</span>
@@ -247,7 +247,7 @@ const ImageAnalyzer = () => {
           {status === 'uploading' && (
             <div className="space-y-4 text-center py-4">
               {previewUrl ? (
-                <img src={previewUrl} alt="Preview" className="mx-auto max-h-44 w-full object-contain rounded-xl border border-slate-200 dark:border-slate-700" />
+                <img src={previewUrl} alt="Preview" className="mx-auto max-h-44 w-full object-contain rounded-xl border border-slate-300 dark:border-slate-700" />
               ) : isPdf && (
                 <div className="mx-auto flex flex-col items-center justify-center gap-2 max-h-44 h-32 rounded-xl border border-rose-200 dark:border-rose-800 bg-rose-50 dark:bg-rose-950/20 text-rose-500 dark:text-rose-400">
                   <FaFilePdf size={36} />
@@ -266,7 +266,7 @@ const ImageAnalyzer = () => {
           {status === 'error' && (
             <div className="space-y-4">
               {previewUrl ? (
-                <img src={previewUrl} alt="Preview" className="mx-auto max-h-44 w-full object-contain rounded-xl border border-slate-200 dark:border-slate-700" />
+                <img src={previewUrl} alt="Preview" className="mx-auto max-h-44 w-full object-contain rounded-xl border border-slate-300 dark:border-slate-700" />
               ) : isPdf && (
                 <div className="mx-auto flex flex-col items-center justify-center gap-2 max-h-44 h-32 rounded-xl border border-rose-200 dark:border-rose-800 bg-rose-50 dark:bg-rose-950/20 text-rose-500 dark:text-rose-400">
                   <FaFilePdf size={36} />
@@ -306,7 +306,7 @@ const ImageAnalyzer = () => {
 
               {/* Preview thumbnail */}
               {previewUrl ? (
-                <img src={previewUrl} alt="Analysed document" className="w-full max-h-36 object-contain rounded-xl border border-slate-200 dark:border-slate-700" />
+                <img src={previewUrl} alt="Analysed document" className="w-full max-h-36 object-contain rounded-xl border border-slate-300 dark:border-slate-700" />
               ) : isPdf && (
                 <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-rose-200 dark:border-rose-800 bg-rose-50 dark:bg-rose-950/20 text-rose-500 dark:text-rose-400">
                   <FaFilePdf size={22} className="flex-shrink-0" />
@@ -321,28 +321,28 @@ const ImageAnalyzer = () => {
                   value={formatINR(result.totalIncome)}
                   icon={FaArrowUp}
                   colorClass="text-emerald-600 dark:text-emerald-400"
-                  bgClass="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700"
+                  bgClass="bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-700"
                 />
                 <SummaryCard
                   label="Total Expense"
                   value={formatINR(result.totalExpense)}
                   icon={FaArrowDown}
                   colorClass="text-rose-600 dark:text-rose-400"
-                  bgClass="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700"
+                  bgClass="bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-700"
                 />
                 <SummaryCard
                   label="Net Balance"
                   value={formatINR(result.netBalance)}
                   icon={FaWallet}
                   colorClass={result.netBalance >= 0 ? 'text-indigo-600 dark:text-indigo-400' : 'text-rose-600 dark:text-rose-400'}
-                  bgClass="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700"
+                  bgClass="bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-700"
                 />
                 <SummaryCard
                   label="Savings Ratio"
                   value={`${result.savingsRatio.toFixed(1)}%`}
                   icon={FaPiggyBank}
                   colorClass={savingsColor(result.savingsRatio)}
-                  bgClass="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700"
+                  bgClass="bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-700"
                 />
               </div>
 
@@ -393,7 +393,7 @@ const ImageAnalyzer = () => {
               {/* Analyse another */}
               <button
                 onClick={handleReset}
-                className="w-full py-2.5 rounded-xl text-sm font-semibold border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition flex items-center justify-center gap-2"
+                className="w-full py-2.5 rounded-xl text-sm font-semibold border border-slate-300 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition flex items-center justify-center gap-2"
               >
                 <FaRedo size={12} /> Analyse Another Document
               </button>

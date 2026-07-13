@@ -111,7 +111,7 @@ const Profile = () => {
         </p>
       </div>
 
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden">
         <div className="p-6 sm:p-8 space-y-6">
           <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-6 pb-6 border-b border-slate-100 dark:border-slate-800">
             <button
@@ -170,7 +170,7 @@ const Profile = () => {
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl pl-9 pr-4 py-3 text-sm outline-none transition"
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl pl-9 pr-4 py-3 text-sm outline-none transition"
                     required
                   />
                 </div>
@@ -187,7 +187,7 @@ const Profile = () => {
                   <select
                     value={currency}
                     onChange={(e) => setCurrency(e.target.value)}
-                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl pl-9 pr-4 py-3 text-sm outline-none transition"
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl pl-9 pr-4 py-3 text-sm outline-none transition"
                   >
                     <option value="USD">USD ($)</option>
                     <option value="INR">INR (₹)</option>
@@ -219,7 +219,7 @@ const Profile = () => {
                 className="hidden"
               />
 
-              <div className="border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl p-5 space-y-4">
+              <div className="border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl p-5 space-y-4">
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
                   <button
                     type="button"
@@ -283,7 +283,7 @@ const Profile = () => {
                     value={profileImage.startsWith('data:') ? '' : profileImage}
                     onChange={(e) => setProfileImage(e.target.value)}
                     placeholder="https://example.com/avatar.jpg"
-                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl px-4 py-3 text-sm outline-none transition"
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl px-4 py-3 text-sm outline-none transition"
                   />
                 )}
               </div>
@@ -293,7 +293,7 @@ const Profile = () => {
               <button
                 type="submit"
                 disabled={loading || imageUploading}
-                className="inline-flex items-center space-x-2 bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-3 rounded-xl font-semibold shadow-md shadow-indigo-600/10 transition duration-200 disabled:opacity-50 text-sm"
+                className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-3 rounded-xl font-semibold shadow-md shadow-indigo-600/10 transition duration-200 disabled:opacity-50 text-sm"
               >
                 {loading ? (
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />

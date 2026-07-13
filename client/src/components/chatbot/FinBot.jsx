@@ -107,11 +107,11 @@ const FinBot = () => {
       ================================================================ */}
       <div
         className={`
-          fixed bottom-24 right-4 sm:right-6 z-50
-          w-[calc(100vw-2rem)] sm:w-[420px] max-w-[420px]
+          fixed bottom-20 right-3 sm:bottom-24 sm:right-6 z-50
+          w-[calc(100vw-1.5rem)] sm:w-[400px] max-w-[400px]
           flex flex-col
           bg-white dark:bg-slate-900
-          border border-slate-200 dark:border-slate-700
+          border border-slate-300 dark:border-slate-700
           rounded-2xl shadow-2xl shadow-slate-900/20 dark:shadow-black/40
           transition-all duration-300 ease-out
           ${isOpen
@@ -119,7 +119,7 @@ const FinBot = () => {
             : 'opacity-0 translate-y-4 pointer-events-none'
           }
         `}
-        style={{ maxHeight: 'min(600px, calc(100vh - 120px))' }}
+        style={{ maxHeight: 'min(580px, calc(100dvh - 90px))' }}
         role="dialog"
         aria-label="FinBot AI Financial Assistant"
         aria-modal="false"
@@ -242,7 +242,7 @@ const FinBot = () => {
                 className="
                   w-full resize-none px-4 py-2.5 pr-12 text-sm
                   bg-slate-50 dark:bg-slate-800
-                  border border-slate-200 dark:border-slate-700
+                  border border-slate-300 dark:border-slate-700
                   rounded-xl
                   text-slate-800 dark:text-slate-100
                   placeholder-slate-400 dark:placeholder-slate-500
@@ -299,7 +299,7 @@ const FinBot = () => {
               absolute bottom-20 right-4
               w-8 h-8 flex items-center justify-center
               bg-white dark:bg-slate-800
-              border border-slate-200 dark:border-slate-700
+              border border-slate-300 dark:border-slate-700
               text-slate-500 dark:text-slate-400
               hover:text-indigo-600 dark:hover:text-indigo-400
               rounded-full shadow-md
@@ -316,7 +316,7 @@ const FinBot = () => {
       {/* ================================================================
           FLOATING ACTION BUTTON (FAB)
       ================================================================ */}
-      <div className="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-50 flex flex-col items-end gap-2">
+      <div className="fixed bottom-4 right-3 sm:bottom-6 sm:right-6 z-50 flex flex-col items-end gap-2">
         {/* Tooltip — shown when closed */}
         {!isOpen && (
           <div className="animate-fade-in">

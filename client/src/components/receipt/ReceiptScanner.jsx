@@ -206,7 +206,7 @@ const ReceiptScanner = ({ onExtracted, onClose }) => {
   };
 
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden animate-fade-in">
+    <div className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden animate-fade-in">
       {/* Header */}
       <div className="flex items-center justify-between px-5 py-3 border-b border-slate-100 dark:border-slate-800 bg-indigo-50 dark:bg-indigo-950/30">
         <div className="flex items-center gap-2 text-indigo-700 dark:text-indigo-300 font-semibold text-sm">
@@ -245,7 +245,7 @@ const ReceiptScanner = ({ onExtracted, onClose }) => {
             {/* File upload */}
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="flex-1 flex flex-col items-center gap-2 py-6 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition text-sm font-medium"
+              className="flex-1 flex flex-col items-center gap-2 py-6 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition text-sm font-medium"
             >
               <FaUpload size={22} />
               <span>Upload Image</span>
@@ -267,7 +267,7 @@ const ReceiptScanner = ({ onExtracted, onClose }) => {
               <img
                 src={previewUrl}
                 alt="Receipt preview"
-                className="w-full max-h-40 object-contain rounded-xl border border-slate-200 dark:border-slate-700"
+                className="w-full max-h-40 object-contain rounded-xl border border-slate-300 dark:border-slate-700"
               />
             )}
             <div className="flex items-center justify-center gap-2 text-indigo-600 dark:text-indigo-400 font-medium text-sm">
@@ -307,7 +307,7 @@ const ReceiptScanner = ({ onExtracted, onClose }) => {
               <img
                 src={previewUrl}
                 alt="Scanned receipt"
-                className="w-full max-h-36 object-contain rounded-xl border border-slate-200 dark:border-slate-700"
+                className="w-full max-h-36 object-contain rounded-xl border border-slate-300 dark:border-slate-700"
               />
             )}
 
@@ -324,7 +324,7 @@ const ReceiptScanner = ({ onExtracted, onClose }) => {
                   type="text"
                   value={parsed.description}
                   onChange={(e) => setParsed({ ...parsed, description: e.target.value })}
-                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 rounded-xl px-3 py-2 text-sm outline-none transition"
+                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 focus:border-indigo-500 rounded-xl px-3 py-2 text-sm outline-none transition"
                 />
               </div>
               <div className="grid grid-cols-2 gap-2.5">
@@ -336,7 +336,7 @@ const ReceiptScanner = ({ onExtracted, onClose }) => {
                     step="0.01"
                     value={parsed.amount}
                     onChange={(e) => setParsed({ ...parsed, amount: parseFloat(e.target.value) || 0 })}
-                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 rounded-xl px-3 py-2 text-sm outline-none transition"
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 focus:border-indigo-500 rounded-xl px-3 py-2 text-sm outline-none transition"
                   />
                 </div>
                 <div>
@@ -345,7 +345,7 @@ const ReceiptScanner = ({ onExtracted, onClose }) => {
                     type="date"
                     value={parsed.date}
                     onChange={(e) => setParsed({ ...parsed, date: e.target.value })}
-                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 rounded-xl px-3 py-2 text-sm outline-none transition"
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 focus:border-indigo-500 rounded-xl px-3 py-2 text-sm outline-none transition"
                   />
                 </div>
               </div>
@@ -355,7 +355,7 @@ const ReceiptScanner = ({ onExtracted, onClose }) => {
                   type="text"
                   value={parsed.category}
                   onChange={(e) => setParsed({ ...parsed, category: e.target.value })}
-                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 rounded-xl px-3 py-2 text-sm outline-none transition"
+                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 focus:border-indigo-500 rounded-xl px-3 py-2 text-sm outline-none transition"
                 />
               </div>
             </div>
@@ -364,7 +364,7 @@ const ReceiptScanner = ({ onExtracted, onClose }) => {
             <div className="flex gap-2.5 pt-1">
               <button
                 onClick={handleReset}
-                className="flex-1 py-2.5 rounded-xl text-sm font-semibold border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition"
+                className="flex-1 py-2.5 rounded-xl text-sm font-semibold border border-slate-300 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition"
               >
                 Rescan
               </button>

@@ -119,18 +119,18 @@ const Budgets = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between sm:items-center space-y-4 sm:space-y-0">
+      <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-100">Monthly Budgets</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-800 dark:text-slate-100">Monthly Budgets</h1>
           <p className="text-slate-500 dark:text-slate-400 text-sm">
             Set and monitor category limits to manage spending
           </p>
         </div>
         <button
           onClick={handleOpenAdd}
-          className="inline-flex items-center space-x-2 bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2.5 rounded-xl font-semibold shadow-md shadow-indigo-600/20 transition duration-200"
+          className="inline-flex items-center justify-center space-x-2 bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2.5 rounded-xl font-semibold shadow-md shadow-indigo-600/20 transition w-full sm:w-auto"
         >
           <FaPlus size={14} />
           <span>Set Budget</span>
@@ -138,29 +138,26 @@ const Budgets = () => {
       </div>
 
       {/* Date filter bar */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-2xl shadow-sm">
-        <div className="flex flex-wrap gap-4 items-center">
-          <div className="flex flex-col">
+      <div className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 p-4 sm:p-6 rounded-2xl shadow-sm">
+        <div className="flex flex-wrap gap-3 items-center">
+          <div className="flex flex-col flex-1 min-w-[120px]">
             <label className="text-xs text-slate-400 mb-1">Month</label>
             <select
               value={month}
               onChange={(e) => setMonth(Number(e.target.value))}
-              className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 rounded-xl px-4 py-2.5 text-sm outline-none transition"
+              className="bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 focus:border-indigo-500 rounded-xl px-3 py-2.5 text-sm outline-none transition"
             >
               {months.map((m, idx) => (
-                <option key={m} value={idx + 1}>
-                  {m}
-                </option>
+                <option key={m} value={idx + 1}>{m}</option>
               ))}
             </select>
           </div>
-
           <div className="flex flex-col">
             <label className="text-xs text-slate-400 mb-1">Year</label>
             <select
               value={year}
               onChange={(e) => setYear(Number(e.target.value))}
-              className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 rounded-xl px-4 py-2.5 text-sm outline-none transition"
+              className="bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 focus:border-indigo-500 rounded-xl px-3 py-2.5 text-sm outline-none transition"
             >
               <option value={2026}>2026</option>
               <option value={2025}>2025</option>
@@ -176,14 +173,14 @@ const Budgets = () => {
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
         </div>
       ) : budgets.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
           {budgets.map((b) => {
             const percentage = Math.min(Math.round((b.spent / b.limit) * 100), 100);
             const ratio = b.spent / b.limit;
             return (
               <div
                 key={b._id}
-                className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-2xl shadow-sm hover:shadow-md transition duration-300 flex flex-col justify-between"
+                className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 p-4 sm:p-6 rounded-2xl shadow-sm hover:shadow-md transition duration-300 flex flex-col justify-between"
               >
                 <div>
                   <div className="flex justify-between items-center mb-4">
@@ -246,17 +243,17 @@ const Budgets = () => {
           })}
         </div>
       ) : (
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 py-16 rounded-2xl shadow-sm text-center text-slate-400 dark:text-slate-500 text-sm">
+        <div className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 py-16 rounded-2xl shadow-sm text-center text-slate-400 dark:text-slate-500 text-sm">
           No budget limits defined for this month. Set monthly category limits to prevent overspending.
         </div>
       )}
 
       {/* Add/Edit Budget Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 backdrop-blur-sm p-4">
-          <div className="w-full max-w-md bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 animate-fade-in overflow-hidden">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-950/50 backdrop-blur-sm p-0 sm:p-4">
+          <div className="w-full sm:max-w-md bg-white dark:bg-slate-900 rounded-t-2xl sm:rounded-2xl shadow-xl border border-slate-300 dark:border-slate-800 animate-fade-in overflow-hidden">
             {/* Modal Title */}
-            <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
+            <div className="px-6 py-4 border-b border-slate-300 dark:border-slate-800 flex justify-between items-center">
               <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">
                 {modalMode === 'add' ? 'Set Category Budget' : 'Edit Budget Limit'}
               </h3>
@@ -276,7 +273,7 @@ const Budgets = () => {
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 rounded-xl px-4 py-2.5 text-sm outline-none transition disabled:opacity-50"
+                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 focus:border-indigo-500 rounded-xl px-4 py-2.5 text-sm outline-none transition disabled:opacity-50"
                   disabled={modalMode === 'edit'}
                   required
                 >
@@ -299,7 +296,7 @@ const Budgets = () => {
                   value={limit}
                   onChange={(e) => setLimit(e.target.value)}
                   placeholder="0.00"
-                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 rounded-xl px-4 py-2.5 text-sm outline-none transition"
+                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 focus:border-indigo-500 rounded-xl px-4 py-2.5 text-sm outline-none transition"
                   required
                 />
               </div>
@@ -309,7 +306,7 @@ const Budgets = () => {
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="flex-1 py-2.5 border border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 text-sm font-semibold rounded-xl hover:bg-slate-50 dark:hover:bg-slate-850 transition"
+                  className="flex-1 py-2.5 border border-slate-300 dark:border-slate-800 text-slate-500 dark:text-slate-400 text-sm font-semibold rounded-xl hover:bg-slate-50 dark:hover:bg-slate-850 transition"
                 >
                   Cancel
                 </button>

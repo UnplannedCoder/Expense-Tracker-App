@@ -127,49 +127,48 @@ const Reports = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between sm:items-center space-y-4 sm:space-y-0">
+      <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-100">Financial Reports</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-800 dark:text-slate-100">Financial Reports</h1>
           <p className="text-slate-500 dark:text-slate-400 text-sm">
             Analyze historical spending trends and download Statements
           </p>
         </div>
-        
         {/* Export Buttons */}
-        <div className="flex space-x-3">
+        <div className="flex gap-2 sm:gap-3">
           <button
             onClick={() => handleExport('csv')}
             disabled={exportLoading.csv}
-            className="inline-flex items-center space-x-2 bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2.5 rounded-xl font-semibold shadow-md shadow-emerald-600/20 transition disabled:opacity-50 text-sm"
+            className="flex-1 sm:flex-none inline-flex items-center justify-center space-x-2 bg-emerald-600 hover:bg-emerald-500 text-white px-3 sm:px-4 py-2.5 rounded-xl font-semibold shadow-md shadow-emerald-600/20 transition disabled:opacity-50 text-sm"
           >
-            <FaFileCsv size={16} />
+            <FaFileCsv size={15} />
             <span>{exportLoading.csv ? 'Exporting...' : 'Export CSV'}</span>
           </button>
           <button
             onClick={() => handleExport('pdf')}
             disabled={exportLoading.pdf}
-            className="inline-flex items-center space-x-2 bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2.5 rounded-xl font-semibold shadow-md shadow-indigo-600/10 transition disabled:opacity-50 text-sm"
+            className="flex-1 sm:flex-none inline-flex items-center justify-center space-x-2 bg-indigo-600 hover:bg-indigo-500 text-white px-3 sm:px-4 py-2.5 rounded-xl font-semibold shadow-md shadow-indigo-600/10 transition disabled:opacity-50 text-sm"
           >
-            <FaFilePdf size={16} />
+            <FaFilePdf size={15} />
             <span>{exportLoading.pdf ? 'Exporting...' : 'Export PDF'}</span>
           </button>
         </div>
       </div>
 
       {/* Year Selection bar */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-2xl shadow-sm">
-        <div className="flex items-center space-x-4">
-          <div className="p-3 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 rounded-xl">
-            <FaCalendarAlt size={18} />
+      <div className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 p-4 sm:p-6 rounded-2xl shadow-sm">
+        <div className="flex items-center space-x-3">
+          <div className="p-2.5 sm:p-3 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 rounded-xl flex-shrink-0">
+            <FaCalendarAlt size={16} />
           </div>
           <div>
             <label className="block text-xs text-slate-400 mb-1">Select Year</label>
             <select
               value={year}
               onChange={(e) => setYear(Number(e.target.value))}
-              className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:border-indigo-500 rounded-xl px-4 py-2 text-sm font-semibold outline-none transition"
+              className="bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 focus:border-indigo-500 rounded-xl px-4 py-2 text-sm font-semibold outline-none transition"
             >
               <option value={2026}>2026</option>
               <option value={2025}>2025</option>
@@ -186,48 +185,49 @@ const Reports = () => {
       ) : (
         <>
           {/* Summary values */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-2xl shadow-sm text-center">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+            <div className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 p-4 sm:p-6 rounded-2xl shadow-sm text-center">
               <span className="text-slate-500 dark:text-slate-400 text-xs font-semibold uppercase tracking-wider block mb-2">
                 Yearly Income
               </span>
-              <h3 className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+              <h3 className="text-xl sm:text-2xl font-bold text-emerald-600 dark:text-emerald-400 truncate">
                 {formatMoney(data.totalIncome)}
               </h3>
             </div>
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-2xl shadow-sm text-center">
+            <div className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 p-4 sm:p-6 rounded-2xl shadow-sm text-center">
               <span className="text-slate-500 dark:text-slate-400 text-xs font-semibold uppercase tracking-wider block mb-2">
                 Yearly Expense
               </span>
-              <h3 className="text-2xl font-bold text-rose-600">
+              <h3 className="text-xl sm:text-2xl font-bold text-rose-600 truncate">
                 {formatMoney(data.totalExpense)}
               </h3>
             </div>
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-2xl shadow-sm text-center">
+            <div className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 p-4 sm:p-6 rounded-2xl shadow-sm text-center">
               <span className="text-slate-500 dark:text-slate-400 text-xs font-semibold uppercase tracking-wider block mb-2">
                 Yearly Savings
               </span>
-              <h3 className={`text-2xl font-bold ${data.netSavings >= 0 ? 'text-indigo-600 dark:text-indigo-400' : 'text-rose-600'}`}>
+              <h3 className={`text-xl sm:text-2xl font-bold truncate ${data.netSavings >= 0 ? 'text-indigo-600 dark:text-indigo-400' : 'text-rose-600'}`}>
                 {formatMoney(data.netSavings)}
               </h3>
             </div>
           </div>
 
           {/* Yearly Chart Visuals */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5">
             {/* Monthly Trend */}
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-2xl shadow-sm lg:col-span-2">
-              <h3 className="font-bold text-slate-800 dark:text-slate-100 text-lg mb-6">
+            <div className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 p-4 sm:p-6 rounded-2xl shadow-sm lg:col-span-2">
+              <h3 className="font-bold text-slate-800 dark:text-slate-100 text-base sm:text-lg mb-4 sm:mb-6">
                 Monthly Trend (Income vs Expense)
               </h3>
-              <div className="h-80">
+              <div className="h-64 sm:h-80">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={data.monthlyData}>
+                  <BarChart data={data.monthlyData} margin={{ top: 5, right: 5, left: -10, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" className="dark:stroke-slate-800" />
-                    <XAxis dataKey="name" stroke="#94a3b8" />
-                    <YAxis stroke="#94a3b8" />
+                    <XAxis dataKey="name" stroke="#94a3b8" tick={{ fontSize: 11 }} />
+                    <YAxis stroke="#94a3b8" tick={{ fontSize: 11 }} width={55}
+                      tickFormatter={(v) => v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v} />
                     <Tooltip content={<CustomBarTooltip />} />
-                    <Legend />
+                    <Legend wrapperStyle={{ fontSize: '12px' }} />
                     <Bar dataKey="income" name="Income" fill="#10b981" radius={[4, 4, 0, 0]} />
                     <Bar dataKey="expense" name="Expense" fill="#ef4444" radius={[4, 4, 0, 0]} />
                   </BarChart>
@@ -236,13 +236,13 @@ const Reports = () => {
             </div>
 
             {/* Category Breakdown */}
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-2xl shadow-sm">
-              <h3 className="font-bold text-slate-800 dark:text-slate-100 text-lg mb-6">
+            <div className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 p-4 sm:p-6 rounded-2xl shadow-sm">
+              <h3 className="font-bold text-slate-800 dark:text-slate-100 text-base sm:text-lg mb-4 sm:mb-6">
                 Category Breakdown
               </h3>
               {data.categoryBreakdown.length > 0 ? (
-                <div className="h-80 flex flex-col justify-between">
-                  <div className="h-48 relative">
+                <div className="flex flex-col">
+                  <div className="h-48">
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
                         <Pie
@@ -251,8 +251,8 @@ const Reports = () => {
                           nameKey="category"
                           cx="50%"
                           cy="50%"
-                          innerRadius={50}
-                          outerRadius={70}
+                          innerRadius={46}
+                          outerRadius={66}
                           paddingAngle={3}
                         >
                           {data.categoryBreakdown.map((entry, index) => (
@@ -263,28 +263,26 @@ const Reports = () => {
                       </PieChart>
                     </ResponsiveContainer>
                   </div>
-                  {/* Legend lists */}
-                  <div className="overflow-y-auto max-h-28 pr-2 space-y-2 mt-4">
+                  {/* Legend */}
+                  <div className="overflow-y-auto max-h-32 pr-1 space-y-2 mt-4">
                     {data.categoryBreakdown.map((entry, index) => (
-                      <div key={entry.category} className="flex justify-between text-xs">
-                        <div className="flex items-center space-x-1.5">
-                          <span
-                            className="w-2 h-2 rounded-full inline-block"
-                            style={{ backgroundColor: COLORS[index % COLORS.length] }}
-                          />
-                          <span className="text-slate-500 dark:text-slate-400 font-medium">
+                      <div key={entry.category} className="flex justify-between items-center text-xs gap-2">
+                        <div className="flex items-center space-x-1.5 min-w-0">
+                          <span className="w-2 h-2 rounded-full inline-block flex-shrink-0"
+                            style={{ backgroundColor: COLORS[index % COLORS.length] }} />
+                          <span className="text-slate-500 dark:text-slate-400 font-medium truncate">
                             {entry.category}
                           </span>
                         </div>
-                        <span className="font-bold text-slate-700 dark:text-slate-300">
-                          {formatMoney(entry.amount)} ({entry.percentage}%)
+                        <span className="font-bold text-slate-700 dark:text-slate-300 flex-shrink-0">
+                          {formatMoney(entry.amount)} <span className="font-normal text-slate-400">({entry.percentage}%)</span>
                         </span>
                       </div>
                     ))}
                   </div>
                 </div>
               ) : (
-                <div className="h-80 flex items-center justify-center text-slate-400 text-sm">
+                <div className="h-64 flex items-center justify-center text-slate-400 text-sm">
                   No expense records to analyze.
                 </div>
               )}
