@@ -1,4 +1,4 @@
-import React, { createContext, useState, useCallback } from 'react';
+import React, { createContext, useState, useCallback, useMemo } from 'react';
 import api from '../services/api';
 
 export const BudgetContext = createContext();
@@ -65,17 +65,18 @@ export const BudgetProvider = ({ children }) => {
     }
   };
 
+  const contextValue = useMemo(() => ({
+    budgets,
+    loading,
+    fetchBudgets,
+    addBudget,
+    editBudget,
+    removeBudget,
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }), [budgets, loading, fetchBudgets]);
+
   return (
-    <BudgetContext.Provider
-      value={{
-        budgets,
-        loading,
-        fetchBudgets,
-        addBudget,
-        editBudget,
-        removeBudget,
-      }}
-    >
+    <BudgetContext.Provider value={contextValue}>
       {children}
     </BudgetContext.Provider>
   );

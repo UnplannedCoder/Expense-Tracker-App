@@ -1,4 +1,4 @@
-import React, { createContext, useState, useCallback } from 'react';
+import React, { createContext, useState, useCallback, useMemo } from 'react';
 import api from '../services/api';
 
 export const TransactionContext = createContext();
@@ -101,20 +101,21 @@ export const TransactionProvider = ({ children }) => {
     }
   };
 
+  const contextValue = useMemo(() => ({
+    transactions,
+    loading,
+    filters,
+    setFilters,
+    resetFilters,
+    fetchTransactions,
+    addTransaction,
+    editTransaction,
+    removeTransaction,
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }), [transactions, loading, filters, fetchTransactions]);
+
   return (
-    <TransactionContext.Provider
-      value={{
-        transactions,
-        loading,
-        filters,
-        setFilters,
-        resetFilters,
-        fetchTransactions,
-        addTransaction,
-        editTransaction,
-        removeTransaction,
-      }}
-    >
+    <TransactionContext.Provider value={contextValue}>
       {children}
     </TransactionContext.Provider>
   );

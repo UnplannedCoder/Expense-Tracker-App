@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { lazy, Suspense, useState, useEffect, useContext } from 'react';
 import {
   FaPlus, FaUsers, FaTrash, FaArrowLeft,
   FaReceipt, FaUserPlus, FaTimes, FaMoneyBillWave,
@@ -7,7 +7,9 @@ import {
 import { GroupContext } from '../../context/GroupContext';
 import { AuthContext } from '../../context/AuthContext';
 import { formatMoney } from '../../utils/formatMoney';
-import ReceiptScanner from '../../components/receipt/ReceiptScanner';
+
+// ReceiptScanner pulls in tesseract.js — lazy-load so it doesn't bloat the groups chunk
+const ReceiptScanner = lazy(() => import('../../components/receipt/ReceiptScanner'));
 
 /* ─── constants ──────────────────────────────────────────────────────────── */
 const GROUP_TYPES = [

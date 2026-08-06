@@ -1,4 +1,4 @@
-import React, { createContext, useState, useCallback } from 'react';
+import React, { createContext, useState, useCallback, useMemo } from 'react';
 import api from '../services/api';
 
 export const CategoryContext = createContext();
@@ -60,17 +60,18 @@ export const CategoryProvider = ({ children }) => {
     }
   };
 
+  const contextValue = useMemo(() => ({
+    categories,
+    loading,
+    fetchCategories,
+    addCategory,
+    editCategory,
+    removeCategory,
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }), [categories, loading, fetchCategories]);
+
   return (
-    <CategoryContext.Provider
-      value={{
-        categories,
-        loading,
-        fetchCategories,
-        addCategory,
-        editCategory,
-        removeCategory,
-      }}
-    >
+    <CategoryContext.Provider value={contextValue}>
       {children}
     </CategoryContext.Provider>
   );

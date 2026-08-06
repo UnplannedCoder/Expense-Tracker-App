@@ -3,20 +3,25 @@
  * ─────────────────────────────────────────────────────────────────────────────
  * Extracts all text content from a PDF File object using pdfjs-dist.
  * Returns a plain string with all page text concatenated.
+ *
+ * pdfjs-dist is dynamically imported so it is NOT included in the initial
+ * bundle — it is only downloaded the first time a user uploads a PDF file.
  * ─────────────────────────────────────────────────────────────────────────────
  */
-
-import * as pdfjsLib from 'pdfjs-dist';
-
-// Point the worker at the bundled asset via Vite's asset handling
-import workerUrl from 'pdfjs-dist/build/pdf.worker.mjs?url';
-pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl;
 
 /**
  * @param {File} file  — a PDF File object from an <input type="file">
  * @returns {Promise<string>}  — full extracted text, pages separated by newlines
  */
 export const pdfToText = async (file) => {
+  // Dynamic import: pdfjs-dist (~3 MB) is fetched on demand, not at startup
+  const [pdfjsLib, { default: workerUrl }] = await Promise.all([
+    import('pdfjs-dist'),
+    import('pdfjs-dist/build/pdf.worker.mjs?url'),
+  ]);
+
+  pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl;
+
   const arrayBuffer = await file.arrayBuffer();
   const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
 

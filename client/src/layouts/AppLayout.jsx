@@ -1,9 +1,11 @@
-import React, { useContext, useState } from 'react';
+import React, { lazy, Suspense, useContext, useState } from 'react';
 import { Outlet, Navigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import Navbar from './Navbar';
 import Sidebar from './Sidebar';
-import FinBot from '../components/chatbot/FinBot';
+
+// FinBot is a heavy AI chat widget — defer it so it never blocks initial render
+const FinBot = lazy(() => import('../components/chatbot/FinBot'));
 
 const AppLayout = () => {
   const { user, loading } = useContext(AuthContext);
@@ -38,8 +40,10 @@ const AppLayout = () => {
         </main>
       </div>
 
-      {/* FinBot — floating AI assistant available on every page */}
-      <FinBot />
+      {/* FinBot — lazy-loaded so it never blocks the initial page render */}
+      <Suspense fallback={null}>
+        <FinBot />
+      </Suspense>
     </div>
   );
 };

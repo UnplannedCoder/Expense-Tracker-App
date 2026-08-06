@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { lazy, Suspense, useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import {
   FaArrowUp, FaArrowDown, FaWallet, FaPiggyBank, FaPlus,
@@ -10,7 +10,9 @@ import {
 import api from '../../services/api';
 import { AuthContext } from '../../context/AuthContext';
 import IconHelper from '../../components/common/IconHelper';
-import ImageAnalyzer from '../../components/ImageAnalyzer';
+
+// ImageAnalyzer pulls in pdfjs-dist — lazy-load so it doesn't bloat the dashboard chunk
+const ImageAnalyzer = lazy(() => import('../../components/ImageAnalyzer'));
 
 const COLORS = ['#6366f1','#10b981','#f59e0b','#ef4444','#ec4899','#8b5cf6','#14b8a6','#06b6d4'];
 
@@ -147,7 +149,9 @@ const Dashboard = () => {
       </div>
 
       {/* ── Smart Expense Analyzer ───────────────────────────────────────── */}
-      <ImageAnalyzer />
+      <Suspense fallback={<div className="h-24 rounded-2xl bg-slate-100 dark:bg-slate-800 animate-pulse" />}>
+        <ImageAnalyzer />
+      </Suspense>
 
       {/* ── Charts ───────────────────────────────────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
