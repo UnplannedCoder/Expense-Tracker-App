@@ -5,15 +5,24 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+
+  // `initializing` — true only while the app is restoring a saved session on
+  // first load. AppLayout blocks on this so it never flashes "not logged in".
+  const [initializing, setInitializing] = useState(true);
+
+  // `loading` — true only during explicit async operations (login, register,
+  // updateProfile, changePassword). Used to disable form buttons / show
+  // spinners inside forms. AppLayout does NOT block on this.
+  const [loading, setLoading] = useState(false);
+
   const [error, setError] = useState(null);
 
-  // Restore session from localStorage on load
+  // Restore session from localStorage on first mount
   useEffect(() => {
-    const fetchUser = async () => {
+    const restoreSession = async () => {
       const token = localStorage.getItem('token');
       if (!token) {
-        setLoading(false);
+        setInitializing(false);
         return;
       }
       try {
@@ -24,14 +33,14 @@ export const AuthProvider = ({ children }) => {
           localStorage.removeItem('token');
         }
       } catch (err) {
-        console.error('Failed to load profile on mount', err);
+        console.error('Failed to restore session', err);
         localStorage.removeItem('token');
       } finally {
-        setLoading(false);
+        setInitializing(false);
       }
     };
 
-    fetchUser();
+    restoreSession();
   }, []);
 
   const login = async (email, password) => {
@@ -122,6 +131,7 @@ export const AuthProvider = ({ children }) => {
     <AuthContext.Provider
       value={{
         user,
+        initializing,
         loading,
         error,
         login,

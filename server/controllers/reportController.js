@@ -1,6 +1,38 @@
 const Transaction = require('../models/Transaction');
 const PDFDocument = require('pdfkit');
 
+// ─── shared helper ────────────────────────────────────────────────────────────
+// Builds the summary object for a given set of transactions
+const buildSummary = (transactions, month, year) => {
+  let totalIncome = 0;
+  let totalExpense = 0;
+  const categoryBreakdown = {};
+
+  transactions.forEach((tx) => {
+    if (tx.type === 'income') {
+      totalIncome += tx.amount;
+    } else {
+      totalExpense += tx.amount;
+      categoryBreakdown[tx.category] = (categoryBreakdown[tx.category] || 0) + tx.amount;
+    }
+  });
+
+  const breakdownArray = Object.keys(categoryBreakdown).map((cat) => ({
+    category: cat,
+    amount: categoryBreakdown[cat],
+    percentage: totalExpense > 0 ? Math.round((categoryBreakdown[cat] / totalExpense) * 100) : 0,
+  }));
+
+  return {
+    month,
+    year,
+    totalIncome,
+    totalExpense,
+    netSavings: totalIncome - totalExpense,
+    categoryBreakdown: breakdownArray,
+  };
+};
+
 // @desc    Get monthly financial report
 // @route   GET /api/v1/reports/monthly
 // @access  Private
@@ -13,42 +45,53 @@ const getMonthlyReport = async (req, res, next) => {
     const startOfMonth = new Date(year, month - 1, 1);
     const endOfMonth = new Date(year, month, 0, 23, 59, 59, 999);
 
-    // Fetch transactions in date range
     const transactions = await Transaction.find({
       userId: req.user._id,
       date: { $gte: startOfMonth, $lte: endOfMonth },
     });
 
-    let totalIncome = 0;
-    let totalExpense = 0;
-    const categoryBreakdown = {};
-
-    transactions.forEach((tx) => {
-      if (tx.type === 'income') {
-        totalIncome += tx.amount;
-      } else {
-        totalExpense += tx.amount;
-        categoryBreakdown[tx.category] = (categoryBreakdown[tx.category] || 0) + tx.amount;
-      }
+    res.json({
+      success: true,
+      data: buildSummary(transactions, month, year),
     });
+  } catch (error) {
+    next(error);
+  }
+};
 
-    // Format category breakdown as array
-    const breakdownArray = Object.keys(categoryBreakdown).map((cat) => ({
-      category: cat,
-      amount: categoryBreakdown[cat],
-      percentage: totalExpense > 0 ? Math.round((categoryBreakdown[cat] / totalExpense) * 100) : 0,
-    }));
+// @desc    Get dashboard summary — auto-detects the most recent month with data.
+//          Falls back to current month if no transactions exist at all.
+// @route   GET /api/v1/reports/dashboard-summary
+// @access  Private
+const getDashboardSummary = async (req, res, next) => {
+  try {
+    const now = new Date();
+
+    // Find the most recent transaction to know which month has actual data
+    const latest = await Transaction.findOne({ userId: req.user._id }).sort({ date: -1 });
+
+    let month, year;
+    if (latest) {
+      const d = new Date(latest.date);
+      month = d.getMonth() + 1;
+      year = d.getFullYear();
+    } else {
+      // No transactions at all — return current month (will be zeros, that's correct)
+      month = now.getMonth() + 1;
+      year = now.getFullYear();
+    }
+
+    const startOfMonth = new Date(year, month - 1, 1);
+    const endOfMonth = new Date(year, month, 0, 23, 59, 59, 999);
+
+    const transactions = await Transaction.find({
+      userId: req.user._id,
+      date: { $gte: startOfMonth, $lte: endOfMonth },
+    });
 
     res.json({
       success: true,
-      data: {
-        month,
-        year,
-        totalIncome,
-        totalExpense,
-        netSavings: totalIncome - totalExpense,
-        categoryBreakdown: breakdownArray,
-      },
+      data: buildSummary(transactions, month, year),
     });
   } catch (error) {
     next(error);
@@ -252,6 +295,7 @@ const exportPDF = async (req, res, next) => {
 
 module.exports = {
   getMonthlyReport,
+  getDashboardSummary,
   getYearlyReport,
   exportCSV,
   exportPDF,

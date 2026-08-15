@@ -8,10 +8,10 @@ import Sidebar from './Sidebar';
 const FinBot = lazy(() => import('../components/chatbot/FinBot'));
 
 const AppLayout = () => {
-  const { user, loading } = useContext(AuthContext);
+  const { user, initializing } = useContext(AuthContext);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  if (loading) {
+  if (initializing) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900 transition-colors duration-300">
         <div className="flex flex-col items-center space-y-4">
