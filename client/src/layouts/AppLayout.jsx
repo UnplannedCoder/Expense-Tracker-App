@@ -2,7 +2,7 @@ import React, { lazy, Suspense, useContext, useState } from "react";
 import { Outlet, Navigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import Navbar from "./Navbar";
-import Sidebar from "./Sidebar";
+import Sidebar from "./Sidebar"
 
 // FinBot is a heavy AI chat widget — defer it so it never blocks initial render
 const FinBot = lazy(() => import("../components/chatbot/FinBot"));
