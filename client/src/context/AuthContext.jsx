@@ -1,10 +1,10 @@
-import React, { createContext, useState, useEffect } from "react"
-import api from "../services/api"
+import React, { createContext, useState, useEffect } from "react";
+import api from "../services/api";
 
-export const AuthContext = createContext()
+export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null)
+  const [user, setUser] = useState(null);
 
   // `initializing` — true only while the app is restoring a saved session on
   // first load. AppLayout blocks on this so it never flashes "not logged in".
