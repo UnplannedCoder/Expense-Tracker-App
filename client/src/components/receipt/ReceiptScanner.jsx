@@ -1,5 +1,5 @@
-import React, { useState, useRef, useCallback } from 'react';
-import { createWorker } from 'tesseract.js';
+import React, { useState, useRef, useCallback } from "react";
+import { createWorker } from "tesseract.js";
 import {
   FaCamera,
   FaUpload,
@@ -8,7 +8,7 @@ import {
   FaCheckCircle,
   FaReceipt,
   FaExclamationTriangle,
-} from 'react-icons/fa';
+} from "react-icons/fa";
 
 /**
  * ReceiptScanner
@@ -29,15 +29,116 @@ import {
 // ── OCR parsing helpers ───────────────────────────────────────────────────────
 
 const CATEGORY_KEYWORDS = {
-  Food:          ['restaurant', 'food', 'pizza', 'burger', 'cafe', 'coffee', 'bistro', 'diner', 'eat', 'meal', 'lunch', 'dinner', 'breakfast', 'swiggy', 'zomato'],
-  Grocery:       ['grocery', 'supermarket', 'market', 'mart', 'fresh', 'vegetables', 'fruits', 'dmart', 'bigbasket', 'blinkit'],
-  Shopping:      ['shop', 'store', 'mall', 'amazon', 'flipkart', 'myntra', 'retail', 'fashion', 'clothing', 'apparel'],
-  Transport:     ['uber', 'ola', 'taxi', 'cab', 'transport', 'bus', 'metro', 'auto', 'ride', 'travel', 'rapido'],
-  Fuel:          ['fuel', 'petrol', 'diesel', 'pump', 'hp', 'bharat petroleum', 'iocl', 'indian oil', 'gas station'],
-  Bills:         ['bill', 'electricity', 'water', 'internet', 'broadband', 'wifi', 'airtel', 'jio', 'bsnl', 'vodafone', 'utility'],
-  Healthcare:    ['pharmacy', 'medical', 'hospital', 'clinic', 'doctor', 'medicine', 'health', 'apollo', 'medplus'],
-  Entertainment: ['cinema', 'movie', 'pvr', 'inox', 'netflix', 'spotify', 'concert', 'theatre', 'amusement'],
-  Travel:        ['hotel', 'flight', 'airline', 'booking', 'airbnb', 'train', 'irctc', 'makemytrip'],
+  Food: [
+    "restaurant",
+    "food",
+    "pizza",
+    "burger",
+    "cafe",
+    "coffee",
+    "bistro",
+    "diner",
+    "eat",
+    "meal",
+    "lunch",
+    "dinner",
+    "breakfast",
+    "swiggy",
+    "zomato",
+  ],
+  Grocery: [
+    "grocery",
+    "supermarket",
+    "market",
+    "mart",
+    "fresh",
+    "vegetables",
+    "fruits",
+    "dmart",
+    "bigbasket",
+    "blinkit",
+  ],
+  Shopping: [
+    "shop",
+    "store",
+    "mall",
+    "amazon",
+    "flipkart",
+    "myntra",
+    "retail",
+    "fashion",
+    "clothing",
+    "apparel",
+  ],
+  Transport: [
+    "uber",
+    "ola",
+    "taxi",
+    "cab",
+    "transport",
+    "bus",
+    "metro",
+    "auto",
+    "ride",
+    "travel",
+    "rapido",
+  ],
+  Fuel: [
+    "fuel",
+    "petrol",
+    "diesel",
+    "pump",
+    "hp",
+    "bharat petroleum",
+    "iocl",
+    "indian oil",
+    "gas station",
+  ],
+  Bills: [
+    "bill",
+    "electricity",
+    "water",
+    "internet",
+    "broadband",
+    "wifi",
+    "airtel",
+    "jio",
+    "bsnl",
+    "vodafone",
+    "utility",
+  ],
+  Healthcare: [
+    "pharmacy",
+    "medical",
+    "hospital",
+    "clinic",
+    "doctor",
+    "medicine",
+    "health",
+    "apollo",
+    "medplus",
+  ],
+  Entertainment: [
+    "cinema",
+    "movie",
+    "pvr",
+    "inox",
+    "netflix",
+    "spotify",
+    "concert",
+    "theatre",
+    "amusement",
+  ],
+  Travel: [
+    "hotel",
+    "flight",
+    "airline",
+    "booking",
+    "airbnb",
+    "train",
+    "irctc",
+    "makemytrip",
+  ],
 };
 
 /**
@@ -48,7 +149,7 @@ const guessCategory = (text) => {
   for (const [category, keywords] of Object.entries(CATEGORY_KEYWORDS)) {
     if (keywords.some((kw) => lower.includes(kw))) return category;
   }
-  return 'Others';
+  return "Others";
 };
 
 /**
@@ -57,16 +158,17 @@ const guessCategory = (text) => {
  * Falls back to the largest number found anywhere in the text.
  */
 const extractAmount = (text) => {
-  const lines = text.split('\n');
+  const lines = text.split("\n");
 
   // Priority: lines that contain total-related keywords
-  const totalKeywords = /\b(total|grand total|amount|net amount|bill amount|to pay|payable|subtotal|sum)\b/i;
+  const totalKeywords =
+    /\b(total|grand total|amount|net amount|bill amount|to pay|payable|subtotal|sum)\b/i;
   const numberPattern = /[\d,]+\.?\d*/g;
 
   for (const line of lines) {
     if (totalKeywords.test(line)) {
       const numbers = (line.match(numberPattern) || [])
-        .map((n) => parseFloat(n.replace(/,/g, '')))
+        .map((n) => parseFloat(n.replace(/,/g, "")))
         .filter((n) => !isNaN(n) && n > 0);
       if (numbers.length > 0) return Math.max(...numbers);
     }
@@ -74,7 +176,7 @@ const extractAmount = (text) => {
 
   // Fallback: largest number in the whole text (likely the bill total)
   const allNumbers = (text.match(numberPattern) || [])
-    .map((n) => parseFloat(n.replace(/,/g, '')))
+    .map((n) => parseFloat(n.replace(/,/g, "")))
     .filter((n) => !isNaN(n) && n > 0 && n < 1_000_000);
 
   return allNumbers.length > 0 ? Math.max(...allNumbers) : 0;
@@ -89,20 +191,42 @@ const extractDate = (text) => {
     // ISO: 2024-07-10
     { re: /\b(\d{4})-(\d{2})-(\d{2})\b/, fn: (m) => `${m[1]}-${m[2]}-${m[3]}` },
     // DD/MM/YYYY
-    { re: /\b(\d{2})\/(\d{2})\/(\d{4})\b/, fn: (m) => `${m[3]}-${m[2]}-${m[1]}` },
+    {
+      re: /\b(\d{2})\/(\d{2})\/(\d{4})\b/,
+      fn: (m) => `${m[3]}-${m[2]}-${m[1]}`,
+    },
     // MM/DD/YYYY
-    { re: /\b(\d{2})\/(\d{2})\/(\d{4})\b/, fn: (m) => `${m[3]}-${m[1]}-${m[2]}` },
+    {
+      re: /\b(\d{2})\/(\d{2})\/(\d{4})\b/,
+      fn: (m) => `${m[3]}-${m[1]}-${m[2]}`,
+    },
     // DD-MM-YYYY
     { re: /\b(\d{2})-(\d{2})-(\d{4})\b/, fn: (m) => `${m[3]}-${m[2]}-${m[1]}` },
     // DD.MM.YYYY
-    { re: /\b(\d{2})\.(\d{2})\.(\d{4})\b/, fn: (m) => `${m[3]}-${m[2]}-${m[1]}` },
+    {
+      re: /\b(\d{2})\.(\d{2})\.(\d{4})\b/,
+      fn: (m) => `${m[3]}-${m[2]}-${m[1]}`,
+    },
     // "12 Jan 2024" / "12 January 2024"
     {
       re: /\b(\d{1,2})\s+(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+(\d{4})\b/i,
       fn: (m) => {
-        const months = { jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,oct:10,nov:11,dec:12 };
+        const months = {
+          jan: 1,
+          feb: 2,
+          mar: 3,
+          apr: 4,
+          may: 5,
+          jun: 6,
+          jul: 7,
+          aug: 8,
+          sep: 9,
+          oct: 10,
+          nov: 11,
+          dec: 12,
+        };
         const mo = months[m[2].toLowerCase().slice(0, 3)];
-        return `${m[3]}-${String(mo).padStart(2,'0')}-${String(m[1]).padStart(2,'0')}`;
+        return `${m[3]}-${String(mo).padStart(2, "0")}-${String(m[1]).padStart(2, "0")}`;
       },
     },
   ];
@@ -116,29 +240,32 @@ const extractDate = (text) => {
     }
   }
 
-  return new Date().toISOString().split('T')[0]; // default today
+  return new Date().toISOString().split("T")[0]; // default today
 };
 
 /**
  * Guesses the merchant / description from the first meaningful line of text.
  */
 const extractDescription = (text) => {
-  const lines = text.split('\n').map((l) => l.trim()).filter((l) => l.length > 2);
+  const lines = text
+    .split("\n")
+    .map((l) => l.trim())
+    .filter((l) => l.length > 2);
   // Skip lines that look like just numbers or single words
   const candidate = lines.find((l) => /[a-zA-Z]/.test(l) && l.length > 4);
   if (candidate) return candidate.slice(0, 80);
-  return 'Receipt';
+  return "Receipt";
 };
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
 const ReceiptScanner = ({ onExtracted, onClose }) => {
-  const [status, setStatus]       = useState('idle'); // idle | scanning | done | error
-  const [progress, setProgress]   = useState(0);
+  const [status, setStatus] = useState("idle"); // idle | scanning | done | error
+  const [progress, setProgress] = useState(0);
   const [previewUrl, setPreviewUrl] = useState(null);
-  const [rawText, setRawText]     = useState('');
-  const [parsed, setParsed]       = useState(null);
-  const [errorMsg, setErrorMsg]   = useState('');
+  const [rawText, setRawText] = useState("");
+  const [parsed, setParsed] = useState(null);
+  const [errorMsg, setErrorMsg] = useState("");
 
   const fileInputRef = useRef(null);
   const cameraInputRef = useRef(null);
@@ -151,14 +278,14 @@ const ReceiptScanner = ({ onExtracted, onClose }) => {
     reader.onload = (e) => setPreviewUrl(e.target.result);
     reader.readAsDataURL(file);
 
-    setStatus('scanning');
+    setStatus("scanning");
     setProgress(0);
-    setErrorMsg('');
+    setErrorMsg("");
 
     try {
-      const worker = await createWorker('eng', 1, {
+      const worker = await createWorker("eng", 1, {
         logger: (m) => {
-          if (m.status === 'recognizing text') {
+          if (m.status === "recognizing text") {
             setProgress(Math.round(m.progress * 100));
           }
         },
@@ -171,18 +298,18 @@ const ReceiptScanner = ({ onExtracted, onClose }) => {
       setRawText(text);
 
       // Parse extracted data
-      const amount      = extractAmount(text);
-      const date        = extractDate(text);
+      const amount = extractAmount(text);
+      const date = extractDate(text);
       const description = extractDescription(text);
-      const category    = guessCategory(text);
+      const category = guessCategory(text);
 
       const result = { amount, date, description, category, rawText: text };
       setParsed(result);
-      setStatus('done');
+      setStatus("done");
     } catch (err) {
-      console.error('OCR error:', err);
-      setErrorMsg('Could not scan the image. Please try a clearer photo.');
-      setStatus('error');
+      console.error("OCR error:", err);
+      setErrorMsg("Could not scan the image. Please try a clearer photo.");
+      setStatus("error");
     }
   }, []);
 
@@ -197,11 +324,11 @@ const ReceiptScanner = ({ onExtracted, onClose }) => {
   };
 
   const handleReset = () => {
-    setStatus('idle');
+    setStatus("idle");
     setPreviewUrl(null);
-    setRawText('');
+    setRawText("");
     setParsed(null);
-    setErrorMsg('');
+    setErrorMsg("");
     setProgress(0);
   };
 
@@ -223,7 +350,7 @@ const ReceiptScanner = ({ onExtracted, onClose }) => {
 
       <div className="p-5 space-y-4">
         {/* Upload buttons — always shown when idle or after reset */}
-        {status === 'idle' && (
+        {status === "idle" && (
           <div className="flex gap-3">
             {/* Camera capture */}
             <button
@@ -261,7 +388,7 @@ const ReceiptScanner = ({ onExtracted, onClose }) => {
         )}
 
         {/* Scanning progress */}
-        {status === 'scanning' && (
+        {status === "scanning" && (
           <div className="space-y-3 text-center py-4">
             {previewUrl && (
               <img
@@ -284,7 +411,7 @@ const ReceiptScanner = ({ onExtracted, onClose }) => {
         )}
 
         {/* Error state */}
-        {status === 'error' && (
+        {status === "error" && (
           <div className="space-y-3">
             <div className="flex items-center gap-2 text-rose-600 dark:text-rose-400 text-sm font-medium bg-rose-50 dark:bg-rose-950/30 border border-rose-100 dark:border-rose-900/30 rounded-xl px-4 py-3">
               <FaExclamationTriangle size={14} />
@@ -300,7 +427,7 @@ const ReceiptScanner = ({ onExtracted, onClose }) => {
         )}
 
         {/* Done — show parsed results */}
-        {status === 'done' && parsed && (
+        {status === "done" && parsed && (
           <div className="space-y-3">
             {/* Preview thumbnail */}
             {previewUrl && (
@@ -319,42 +446,61 @@ const ReceiptScanner = ({ onExtracted, onClose }) => {
             {/* Extracted fields — editable before applying */}
             <div className="space-y-2.5">
               <div>
-                <label className="block text-xs text-slate-400 mb-1">Description</label>
+                <label className="block text-xs text-slate-400 mb-1">
+                  Description
+                </label>
                 <input
                   type="text"
                   value={parsed.description}
-                  onChange={(e) => setParsed({ ...parsed, description: e.target.value })}
+                  onChange={(e) =>
+                    setParsed({ ...parsed, description: e.target.value })
+                  }
                   className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 focus:border-indigo-500 rounded-xl px-3 py-2 text-sm outline-none transition"
                 />
               </div>
               <div className="grid grid-cols-2 gap-2.5">
                 <div>
-                  <label className="block text-xs text-slate-400 mb-1">Amount</label>
+                  <label className="block text-xs text-slate-400 mb-1">
+                    Amount
+                  </label>
                   <input
                     type="number"
                     min="0"
                     step="0.01"
                     value={parsed.amount}
-                    onChange={(e) => setParsed({ ...parsed, amount: parseFloat(e.target.value) || 0 })}
+                    onChange={(e) =>
+                      setParsed({
+                        ...parsed,
+                        amount: parseFloat(e.target.value) || 0,
+                      })
+                    }
                     className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 focus:border-indigo-500 rounded-xl px-3 py-2 text-sm outline-none transition"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-slate-400 mb-1">Date</label>
+                  <label className="block text-xs text-slate-400 mb-1">
+                    Date
+                  </label>
                   <input
                     type="date"
                     value={parsed.date}
-                    onChange={(e) => setParsed({ ...parsed, date: e.target.value })}
+                    onChange={(e) =>
+                      setParsed({ ...parsed, date: e.target.value })
+                    }
                     className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 focus:border-indigo-500 rounded-xl px-3 py-2 text-sm outline-none transition"
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-xs text-slate-400 mb-1">Category (auto-detected)</label>
+                <label className="block text-xs text-slate-400 mb-1">
+                  Category (auto-detected)
+                </label>
                 <input
                   type="text"
                   value={parsed.category}
-                  onChange={(e) => setParsed({ ...parsed, category: e.target.value })}
+                  onChange={(e) =>
+                    setParsed({ ...parsed, category: e.target.value })
+                  }
                   className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 focus:border-indigo-500 rounded-xl px-3 py-2 text-sm outline-none transition"
                 />
               </div>
