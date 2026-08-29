@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { NavLink } from 'react-router-dom';
+import React, { useEffect } from "react";
+import { NavLink } from "react-router-dom";
 import {
   FaChartPie,
   FaExchangeAlt,
@@ -9,27 +9,29 @@ import {
   FaCog,
   FaChartBar,
   FaTimes,
-} from 'react-icons/fa';
+} from "react-icons/fa";
 
 const Sidebar = ({ isOpen, onClose }) => {
   const menuItems = [
-    { name: 'Dashboard',    path: '/dashboard',    icon: FaChartPie },
-    { name: 'Transactions', path: '/transactions', icon: FaExchangeAlt },
-    { name: 'Budgets',      path: '/budgets',      icon: FaPiggyBank },
-    { name: 'Analytics',    path: '/analytics',    icon: FaChartBar },
-    { name: 'Reports',      path: '/reports',      icon: FaFileAlt },
-    { name: 'Profile',      path: '/profile',      icon: FaUser },
-    { name: 'Settings',     path: '/settings',     icon: FaCog },
+    { name: "Dashboard", path: "/dashboard", icon: FaChartPie },
+    { name: "Transactions", path: "/transactions", icon: FaExchangeAlt },
+    { name: "Budgets", path: "/budgets", icon: FaPiggyBank },
+    { name: "Analytics", path: "/analytics", icon: FaChartBar },
+    { name: "Reports", path: "/reports", icon: FaFileAlt },
+    { name: "Profile", path: "/profile", icon: FaUser },
+    { name: "Settings", path: "/settings", icon: FaCog },
   ];
 
   // Lock body scroll when mobile drawer is open
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = '';
+      document.body.style.overflow = "";
     }
-    return () => { document.body.style.overflow = ''; };
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [isOpen]);
 
   const NavItems = () => (
@@ -44,8 +46,8 @@ const Sidebar = ({ isOpen, onClose }) => {
             className={({ isActive }) =>
               `flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
                 isActive
-                  ? 'bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 border border-indigo-100/40 dark:border-indigo-900/40'
-                  : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-100'
+                  ? "bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 border border-indigo-100/40 dark:border-indigo-900/40"
+                  : "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-100"
               }`
             }
           >
@@ -63,7 +65,9 @@ const Sidebar = ({ isOpen, onClose }) => {
       <aside className="hidden lg:flex w-64 bg-white dark:bg-slate-900 border-r border-slate-300 dark:border-slate-800 flex-shrink-0 flex-col transition-colors duration-300">
         <NavItems />
         <div className="p-4 border-t border-slate-300 dark:border-slate-800 text-center">
-          <span className="text-xs text-slate-400 dark:text-slate-500">SpendWise v1.0.0</span>
+          <span className="text-xs text-slate-400 dark:text-slate-500">
+            SpendWise v1.0.0
+          </span>
         </div>
       </aside>
 
@@ -85,7 +89,7 @@ const Sidebar = ({ isOpen, onClose }) => {
           flex flex-col
           shadow-2xl
           transform transition-transform duration-300 ease-in-out
-          ${isOpen ? 'translate-x-0' : '-translate-x-full'}
+          ${isOpen ? "translate-x-0" : "-translate-x-full"}
         `}
       >
         {/* Drawer header */}
@@ -110,7 +114,9 @@ const Sidebar = ({ isOpen, onClose }) => {
         <NavItems />
 
         <div className="p-4 border-t border-slate-300 dark:border-slate-800 text-center">
-          <span className="text-xs text-slate-400 dark:text-slate-500">SpendWise v1.0.0</span>
+          <span className="text-xs text-slate-400 dark:text-slate-500">
+            SpendWise v1.0.0
+          </span>
         </div>
       </aside>
     </>
