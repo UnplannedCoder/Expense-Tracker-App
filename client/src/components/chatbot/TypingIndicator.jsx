@@ -1,5 +1,5 @@
-import React from 'react';
-import RobotAvatar from './RobotAvatar';
+import React from "react";
+import RobotAvatar from "./RobotAvatar";
 
 /**
  * TypingIndicator
@@ -16,19 +16,30 @@ const TypingIndicator = () => {
 
       {/* Bubble */}
       <div className="flex items-center gap-1.5 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl rounded-bl-sm px-4 py-3 shadow-sm">
-        <span className="text-xs text-slate-400 dark:text-slate-500 mr-1 font-medium">FinBot is thinking</span>
+        <span className="text-xs text-slate-400 dark:text-slate-500 mr-1 font-medium">
+          FinBot is thinking
+        </span>
         {/* Bouncing dots */}
         <span
           className="w-1.5 h-1.5 rounded-full bg-indigo-400 dark:bg-indigo-500 inline-block"
-          style={{ animation: 'typingBounce 1.2s ease-in-out infinite', animationDelay: '0ms' }}
+          style={{
+            animation: "typingBounce 1.2s ease-in-out infinite",
+            animationDelay: "0ms",
+          }}
         />
         <span
           className="w-1.5 h-1.5 rounded-full bg-indigo-400 dark:bg-indigo-500 inline-block"
-          style={{ animation: 'typingBounce 1.2s ease-in-out infinite', animationDelay: '200ms' }}
+          style={{
+            animation: "typingBounce 1.2s ease-in-out infinite",
+            animationDelay: "200ms",
+          }}
         />
         <span
           className="w-1.5 h-1.5 rounded-full bg-indigo-400 dark:bg-indigo-500 inline-block"
-          style={{ animation: 'typingBounce 1.2s ease-in-out infinite', animationDelay: '400ms' }}
+          style={{
+            animation: "typingBounce 1.2s ease-in-out infinite",
+            animationDelay: "400ms",
+          }}
         />
       </div>
 
