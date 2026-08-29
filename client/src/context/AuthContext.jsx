@@ -1,5 +1,5 @@
-import React, { createContext, useState, useEffect } from 'react';
-import api from '../services/api';
+import React, { createContext, useState, useEffect } from "react";
+import api from "../services/api";
 
 export const AuthContext = createContext();
 
@@ -20,21 +20,21 @@ export const AuthProvider = ({ children }) => {
   // Restore session from localStorage on first mount
   useEffect(() => {
     const restoreSession = async () => {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       if (!token) {
         setInitializing(false);
         return;
       }
       try {
-        const res = await api.get('/auth/profile');
+        const res = await api.get("/auth/profile");
         if (res.data.success) {
           setUser(res.data.data);
         } else {
-          localStorage.removeItem('token');
+          localStorage.removeItem("token");
         }
       } catch (err) {
-        console.error('Failed to restore session', err);
-        localStorage.removeItem('token');
+        console.error("Failed to restore session", err);
+        localStorage.removeItem("token");
       } finally {
         setInitializing(false);
       }
@@ -47,15 +47,17 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     setError(null);
     try {
-      const res = await api.post('/auth/login', { email, password });
+      const res = await api.post("/auth/login", { email, password });
       if (res.data.success) {
         const { token, ...userData } = res.data.data;
-        localStorage.setItem('token', token);
+        localStorage.setItem("token", token);
         setUser(userData);
         return { success: true };
       }
     } catch (err) {
-      const errMsg = err.response?.data?.message || 'Login failed. Please check your credentials.';
+      const errMsg =
+        err.response?.data?.message ||
+        "Login failed. Please check your credentials.";
       setError(errMsg);
       return { success: false, error: errMsg };
     } finally {
@@ -67,15 +69,21 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     setError(null);
     try {
-      const res = await api.post('/auth/register', { name, email, password, currency });
+      const res = await api.post("/auth/register", {
+        name,
+        email,
+        password,
+        currency,
+      });
       if (res.data.success) {
         const { token, ...userData } = res.data.data;
-        localStorage.setItem('token', token);
+        localStorage.setItem("token", token);
         setUser(userData);
         return { success: true };
       }
     } catch (err) {
-      const errMsg = err.response?.data?.message || 'Registration failed. Try again.';
+      const errMsg =
+        err.response?.data?.message || "Registration failed. Try again.";
       setError(errMsg);
       return { success: false, error: errMsg };
     } finally {
@@ -84,7 +92,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
-    localStorage.removeItem('token');
+    localStorage.removeItem("token");
     setUser(null);
   };
 
@@ -92,17 +100,17 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     setError(null);
     try {
-      const res = await api.put('/auth/profile', profileData);
+      const res = await api.put("/auth/profile", profileData);
       if (res.data.success) {
         const { token, ...userData } = res.data.data;
         if (token) {
-          localStorage.setItem('token', token);
+          localStorage.setItem("token", token);
         }
         setUser(userData);
         return { success: true };
       }
     } catch (err) {
-      const errMsg = err.response?.data?.message || 'Profile update failed.';
+      const errMsg = err.response?.data?.message || "Profile update failed.";
       setError(errMsg);
       return { success: false, error: errMsg };
     } finally {
@@ -114,10 +122,13 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     setError(null);
     try {
-      const res = await api.put('/auth/change-password', { currentPassword, newPassword });
+      const res = await api.put("/auth/change-password", {
+        currentPassword,
+        newPassword,
+      });
       return { success: res.data.success };
     } catch (err) {
-      const errMsg = err.response?.data?.message || 'Password update failed.';
+      const errMsg = err.response?.data?.message || "Password update failed.";
       setError(errMsg);
       return { success: false, error: errMsg };
     } finally {
