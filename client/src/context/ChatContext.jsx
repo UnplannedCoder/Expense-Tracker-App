@@ -1,6 +1,6 @@
-import React, { createContext, useState, useCallback, useContext } from 'react';
-import api from '../services/api';
-import { AuthContext } from './AuthContext';
+import React, { createContext, useState, useCallback, useContext } from "react";
+import api from "../services/api";
+import { AuthContext } from "./AuthContext";
 
 export const ChatContext = createContext();
 
@@ -45,15 +45,15 @@ export const ChatProvider = ({ children }) => {
    */
   const loadHistory = useCallback(async () => {
     try {
-      const res = await api.get('/chat/history');
+      const res = await api.get("/chat/history");
       if (res.data.success) {
         const history = res.data.data;
         if (history.length === 0 && !hasGreeted) {
           // First-time user — show welcome greeting
           setMessages([
             {
-              _id: 'welcome',
-              role: 'model',
+              _id: "welcome",
+              role: "model",
               message:
                 "Hello! I'm **FinBot** 👋, your personal AI Financial Assistant.\n\nI can help you with:\n- 📊 Analyzing your spending patterns\n- 💡 Budget planning & saving tips\n- 📈 Monthly financial summaries\n- 🎯 Personalized money-saving advice\n\nWhat would you like to know about your finances today?",
               createdAt: new Date().toISOString(),
@@ -66,14 +66,15 @@ export const ChatProvider = ({ children }) => {
         }
       }
     } catch (err) {
-      console.error('Failed to load chat history:', err);
+      console.error("Failed to load chat history:", err);
       // Still show greeting even if history load fails
       if (!hasGreeted) {
         setMessages([
           {
-            _id: 'welcome',
-            role: 'model',
-            message: "Hello! I'm **FinBot** 👋, your personal AI Financial Assistant. How can I help you today?",
+            _id: "welcome",
+            role: "model",
+            message:
+              "Hello! I'm **FinBot** 👋, your personal AI Financial Assistant. How can I help you today?",
             createdAt: new Date().toISOString(),
             isWelcome: true,
           },
@@ -99,7 +100,7 @@ export const ChatProvider = ({ children }) => {
       // Optimistic user message
       const tempUserMsg = {
         _id: `temp-user-${Date.now()}`,
-        role: 'user',
+        role: "user",
         message: trimmed,
         createdAt: new Date().toISOString(),
         isTemp: true,
@@ -109,7 +110,7 @@ export const ChatProvider = ({ children }) => {
       setIsLoading(true);
 
       try {
-        const res = await api.post('/chat/message', { message: trimmed });
+        const res = await api.post("/chat/message", { message: trimmed });
         if (res.data.success) {
           // Replace temp message with confirmed + add AI response
           setMessages((prev) => [
@@ -117,7 +118,7 @@ export const ChatProvider = ({ children }) => {
             { ...tempUserMsg, _id: `user-${Date.now()}`, isTemp: false },
             {
               _id: `model-${Date.now()}`,
-              role: 'model',
+              role: "model",
               message: res.data.data.message,
               createdAt: res.data.data.timestamp,
             },
@@ -126,7 +127,7 @@ export const ChatProvider = ({ children }) => {
       } catch (err) {
         const errMsg =
           err.response?.data?.message ||
-          'Something went wrong. Please check your connection and try again.';
+          "Something went wrong. Please check your connection and try again.";
         setError(errMsg);
         // Remove the optimistic message on error
         setMessages((prev) => prev.filter((m) => m._id !== tempUserMsg._id));
@@ -134,7 +135,7 @@ export const ChatProvider = ({ children }) => {
         setIsLoading(false);
       }
     },
-    [isLoading]
+    [isLoading],
   );
 
   /**
@@ -142,19 +143,20 @@ export const ChatProvider = ({ children }) => {
    */
   const clearHistory = useCallback(async () => {
     try {
-      await api.delete('/chat/history');
+      await api.delete("/chat/history");
       setMessages([
         {
-          _id: 'welcome-after-clear',
-          role: 'model',
-          message: "Chat cleared! I'm ready to help. What would you like to know about your finances?",
+          _id: "welcome-after-clear",
+          role: "model",
+          message:
+            "Chat cleared! I'm ready to help. What would you like to know about your finances?",
           createdAt: new Date().toISOString(),
           isWelcome: true,
         },
       ]);
       setError(null);
     } catch (err) {
-      console.error('Failed to clear chat history:', err);
+      console.error("Failed to clear chat history:", err);
     }
   }, []);
 
