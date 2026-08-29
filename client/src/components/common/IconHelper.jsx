@@ -4,7 +4,7 @@
  * library. Only icons that are actually used across the app are listed here.
  * Add new entries as needed — this keeps the bundle lean.
  */
-import React from 'react';
+import React from "react";
 import {
   FaArrowUp,
   FaArrowDown,
@@ -24,7 +24,7 @@ import {
   FaPiggyBank,
   FaChartLine,
   FaQuestionCircle,
-} from 'react-icons/fa';
+} from "react-icons/fa";
 
 const ICON_MAP = {
   FaArrowUp,
@@ -47,7 +47,7 @@ const ICON_MAP = {
   FaQuestionCircle,
 };
 
-const IconHelper = ({ name, className = '', size }) => {
+const IconHelper = ({ name, className = "", size }) => {
   const IconComponent = ICON_MAP[name] ?? FaQuestionCircle;
   return <IconComponent className={className} size={size} />;
 };
