@@ -1,17 +1,23 @@
-import React, { useContext, useRef, useEffect, useState, useCallback } from 'react';
+import React, {
+  useContext,
+  useRef,
+  useEffect,
+  useState,
+  useCallback,
+} from "react";
 import {
   FaTimes,
   FaPaperPlane,
   FaTrash,
   FaChevronDown,
   FaExclamationCircle,
-} from 'react-icons/fa';
-import { ChatContext } from '../../context/ChatContext';
-import { AuthContext } from '../../context/AuthContext';
-import ChatMessage from './ChatMessage';
-import TypingIndicator from './TypingIndicator';
-import QuickActions from './QuickActions';
-import RobotAvatar from './RobotAvatar';
+} from "react-icons/fa";
+import { ChatContext } from "../../context/ChatContext";
+import { AuthContext } from "../../context/AuthContext";
+import ChatMessage from "./ChatMessage";
+import TypingIndicator from "./TypingIndicator";
+import QuickActions from "./QuickActions";
+import RobotAvatar from "./RobotAvatar";
 
 /**
  * FinBot
@@ -35,7 +41,7 @@ const FinBot = () => {
     clearHistory,
   } = useContext(ChatContext);
 
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState("");
   const [showScrollBtn, setShowScrollBtn] = useState(false);
   const [showClearConfirm, setShowClearConfirm] = useState(false);
 
@@ -46,7 +52,7 @@ const FinBot = () => {
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
     if (isOpen) {
-      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages, isLoading, isOpen]);
 
@@ -61,23 +67,24 @@ const FinBot = () => {
   const handleScroll = useCallback(() => {
     const container = messagesContainerRef.current;
     if (!container) return;
-    const distFromBottom = container.scrollHeight - container.scrollTop - container.clientHeight;
+    const distFromBottom =
+      container.scrollHeight - container.scrollTop - container.clientHeight;
     setShowScrollBtn(distFromBottom > 150);
   }, []);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   const handleSend = useCallback(() => {
     const text = inputValue.trim();
     if (!text || isLoading) return;
     sendMessage(text);
-    setInputValue('');
+    setInputValue("");
   }, [inputValue, isLoading, sendMessage]);
 
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSend();
     }
@@ -85,7 +92,7 @@ const FinBot = () => {
 
   const handleQuickAction = (text) => {
     sendMessage(text);
-    setInputValue('');
+    setInputValue("");
   };
 
   const handleClearConfirm = () => {
@@ -114,12 +121,13 @@ const FinBot = () => {
           border border-slate-300 dark:border-slate-700
           rounded-2xl shadow-2xl shadow-slate-900/20 dark:shadow-black/40
           transition-all duration-300 ease-out
-          ${isOpen
-            ? 'opacity-100 translate-y-0 pointer-events-auto'
-            : 'opacity-0 translate-y-4 pointer-events-none'
+          ${
+            isOpen
+              ? "opacity-100 translate-y-0 pointer-events-auto"
+              : "opacity-0 translate-y-4 pointer-events-none"
           }
         `}
-        style={{ maxHeight: 'min(580px, calc(100dvh - 90px))' }}
+        style={{ maxHeight: "min(580px, calc(100dvh - 90px))" }}
         role="dialog"
         aria-label="FinBot AI Financial Assistant"
         aria-modal="false"
@@ -133,10 +141,14 @@ const FinBot = () => {
 
           {/* Title + status */}
           <div className="flex-1 min-w-0">
-            <h3 className="font-bold text-white text-sm leading-tight">FinBot</h3>
+            <h3 className="font-bold text-white text-sm leading-tight">
+              FinBot
+            </h3>
             <p className="text-indigo-200 text-xs flex items-center gap-1.5">
-              <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${isLoading ? 'bg-yellow-300 animate-pulse' : 'bg-emerald-300'}`} />
-              {isLoading ? 'Thinking...' : 'AI Financial Assistant'}
+              <span
+                className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${isLoading ? "bg-yellow-300 animate-pulse" : "bg-emerald-300"}`}
+              />
+              {isLoading ? "Thinking..." : "AI Financial Assistant"}
             </p>
           </div>
 
@@ -217,15 +229,18 @@ const FinBot = () => {
         {/* ---- Error Banner ---- */}
         {error && (
           <div className="flex items-start gap-2 mx-4 mb-2 px-3 py-2.5 bg-red-50 dark:bg-red-950/30 border border-red-100 dark:border-red-900/30 rounded-xl flex-shrink-0">
-            <FaExclamationCircle size={14} className="text-red-500 flex-shrink-0 mt-0.5" />
-            <p className="text-xs text-red-600 dark:text-red-400 leading-snug">{error}</p>
+            <FaExclamationCircle
+              size={14}
+              className="text-red-500 flex-shrink-0 mt-0.5"
+            />
+            <p className="text-xs text-red-600 dark:text-red-400 leading-snug">
+              {error}
+            </p>
           </div>
         )}
 
         {/* ---- Quick Actions ---- */}
-        {showQuickActions && (
-          <QuickActions onSelect={handleQuickAction} />
-        )}
+        {showQuickActions && <QuickActions onSelect={handleQuickAction} />}
 
         {/* ---- Input Area ---- */}
         <div className="px-4 py-3 border-t border-slate-100 dark:border-slate-800 flex-shrink-0">
@@ -252,13 +267,15 @@ const FinBot = () => {
                   leading-relaxed
                 "
                 style={{
-                  maxHeight: '120px',
-                  overflowY: inputValue.split('\n').length > 3 ? 'auto' : 'hidden',
+                  maxHeight: "120px",
+                  overflowY:
+                    inputValue.split("\n").length > 3 ? "auto" : "hidden",
                 }}
                 onInput={(e) => {
                   // Auto-grow textarea
-                  e.target.style.height = 'auto';
-                  e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px';
+                  e.target.style.height = "auto";
+                  e.target.style.height =
+                    Math.min(e.target.scrollHeight, 120) + "px";
                 }}
               />
             </div>
@@ -336,13 +353,16 @@ const FinBot = () => {
             flex items-center justify-center
             shadow-xl transition-all duration-300
             focus:outline-none focus:ring-4 focus:ring-indigo-400/30
-            ${isOpen
-              ? 'bg-slate-700 dark:bg-slate-600 hover:bg-slate-800 dark:hover:bg-slate-500 rotate-0 scale-95'
-              : 'bg-gradient-to-br from-indigo-500 to-indigo-700 hover:from-indigo-400 hover:to-indigo-600 hover:scale-105 active:scale-95'
+            ${
+              isOpen
+                ? "bg-slate-700 dark:bg-slate-600 hover:bg-slate-800 dark:hover:bg-slate-500 rotate-0 scale-95"
+                : "bg-gradient-to-br from-indigo-500 to-indigo-700 hover:from-indigo-400 hover:to-indigo-600 hover:scale-105 active:scale-95"
             }
           `}
-          aria-label={isOpen ? 'Close FinBot' : 'Open FinBot AI Financial Assistant'}
-          title={isOpen ? 'Close FinBot' : 'Open FinBot'}
+          aria-label={
+            isOpen ? "Close FinBot" : "Open FinBot AI Financial Assistant"
+          }
+          title={isOpen ? "Close FinBot" : "Open FinBot"}
         >
           {/* Pulse ring — shown when closed */}
           {!isOpen && (
