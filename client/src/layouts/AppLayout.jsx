@@ -1,11 +1,11 @@
-import React, { lazy, Suspense, useContext, useState } from 'react';
-import { Outlet, Navigate } from 'react-router-dom';
-import { AuthContext } from '../context/AuthContext';
-import Navbar from './Navbar';
-import Sidebar from './Sidebar';
+import React, { lazy, Suspense, useContext, useState } from "react";
+import { Outlet, Navigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
+import Navbar from "./Navbar";
+import Sidebar from "./Sidebar";
 
 // FinBot is a heavy AI chat widget — defer it so it never blocks initial render
-const FinBot = lazy(() => import('../components/chatbot/FinBot'));
+const FinBot = lazy(() => import("../components/chatbot/FinBot"));
 
 const AppLayout = () => {
   const { user, initializing } = useContext(AuthContext);
@@ -16,7 +16,9 @@ const AppLayout = () => {
       <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900 transition-colors duration-300">
         <div className="flex flex-col items-center space-y-4">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-          <p className="text-slate-500 dark:text-slate-400 font-medium text-sm">Loading SpendWise...</p>
+          <p className="text-slate-500 dark:text-slate-400 font-medium text-sm">
+            Loading SpendWise...
+          </p>
         </div>
       </div>
     );
