@@ -1,5 +1,5 @@
-import React, { createContext, useState, useCallback, useMemo } from 'react';
-import api from '../services/api';
+import React, { createContext, useState, useCallback, useMemo } from "react";
+import api from "../services/api";
 
 export const BudgetContext = createContext();
 
@@ -14,12 +14,12 @@ export const BudgetProvider = ({ children }) => {
       if (month) params.month = month;
       if (year) params.year = year;
 
-      const res = await api.get('/budgets', { params });
+      const res = await api.get("/budgets", { params });
       if (res.data.success) {
         setBudgets(res.data.data);
       }
     } catch (err) {
-      console.error('Error fetching budgets:', err);
+      console.error("Error fetching budgets:", err);
     } finally {
       setLoading(false);
     }
@@ -27,15 +27,18 @@ export const BudgetProvider = ({ children }) => {
 
   const addBudget = async (budgetData) => {
     try {
-      const res = await api.post('/budgets', budgetData);
+      const res = await api.post("/budgets", budgetData);
       if (res.data.success) {
         // Fetch using the budget's month and year
         fetchBudgets(budgetData.month, budgetData.year);
         return { success: true, data: res.data.data };
       }
     } catch (err) {
-      console.error('Error adding budget:', err);
-      return { success: false, error: err.response?.data?.message || 'Error creating budget.' };
+      console.error("Error adding budget:", err);
+      return {
+        success: false,
+        error: err.response?.data?.message || "Error creating budget.",
+      };
     }
   };
 
@@ -47,8 +50,11 @@ export const BudgetProvider = ({ children }) => {
         return { success: true, data: res.data.data };
       }
     } catch (err) {
-      console.error('Error editing budget:', err);
-      return { success: false, error: err.response?.data?.message || 'Error updating budget limit.' };
+      console.error("Error editing budget:", err);
+      return {
+        success: false,
+        error: err.response?.data?.message || "Error updating budget limit.",
+      };
     }
   };
 
@@ -60,20 +66,26 @@ export const BudgetProvider = ({ children }) => {
         return { success: true };
       }
     } catch (err) {
-      console.error('Error deleting budget:', err);
-      return { success: false, error: err.response?.data?.message || 'Error removing budget.' };
+      console.error("Error deleting budget:", err);
+      return {
+        success: false,
+        error: err.response?.data?.message || "Error removing budget.",
+      };
     }
   };
 
-  const contextValue = useMemo(() => ({
-    budgets,
-    loading,
-    fetchBudgets,
-    addBudget,
-    editBudget,
-    removeBudget,
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }), [budgets, loading, fetchBudgets]);
+  const contextValue = useMemo(
+    () => ({
+      budgets,
+      loading,
+      fetchBudgets,
+      addBudget,
+      editBudget,
+      removeBudget,
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }),
+    [budgets, loading, fetchBudgets],
+  );
 
   return (
     <BudgetContext.Provider value={contextValue}>
