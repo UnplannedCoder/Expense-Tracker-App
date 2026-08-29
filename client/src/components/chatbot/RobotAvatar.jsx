@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 /**
  * RobotAvatar
@@ -6,7 +6,7 @@ import React from 'react';
  * Uses CSS keyframe animations defined inline — no extra dependencies.
  * Variants: 'floating' (large, for header), 'small' (for message bubbles), 'fab' (for the FAB button)
  */
-const RobotAvatar = ({ variant = 'floating', className = '' }) => {
+const RobotAvatar = ({ variant = "floating", className = "" }) => {
   const sizes = {
     fab: { width: 36, height: 36 },
     small: { width: 28, height: 28 },
@@ -16,7 +16,10 @@ const RobotAvatar = ({ variant = 'floating', className = '' }) => {
   const { width, height } = sizes[variant] || sizes.floating;
 
   return (
-    <div className={`relative flex-shrink-0 ${className}`} style={{ width, height }}>
+    <div
+      className={`relative flex-shrink-0 ${className}`}
+      style={{ width, height }}
+    >
       <style>{`
         @keyframes bot-float {
           0%, 100% { transform: translateY(0px); }
@@ -45,22 +48,52 @@ const RobotAvatar = ({ variant = 'floating', className = '' }) => {
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
         className="bot-float"
-        style={{ width: '100%', height: '100%' }}
+        style={{ width: "100%", height: "100%" }}
       >
         {/* --- Antenna --- */}
-        <line x1="50" y1="8" x2="50" y2="18" stroke="#94a3b8" strokeWidth="3" strokeLinecap="round" />
-        <circle cx="50" cy="6" r="4" fill="#6366f1" className="bot-antenna-pulse" />
+        <line
+          x1="50"
+          y1="8"
+          x2="50"
+          y2="18"
+          stroke="#94a3b8"
+          strokeWidth="3"
+          strokeLinecap="round"
+        />
+        <circle
+          cx="50"
+          cy="6"
+          r="4"
+          fill="#6366f1"
+          className="bot-antenna-pulse"
+        />
 
         {/* --- Head --- */}
         {/* Outer shell */}
         <ellipse cx="50" cy="32" rx="26" ry="24" fill="#e2e8f0" />
         {/* Highlight sheen */}
-        <ellipse cx="42" cy="22" rx="8" ry="5" fill="white" opacity="0.5" transform="rotate(-20 42 22)" />
+        <ellipse
+          cx="42"
+          cy="22"
+          rx="8"
+          ry="5"
+          fill="white"
+          opacity="0.5"
+          transform="rotate(-20 42 22)"
+        />
 
         {/* Visor / face screen */}
         <rect x="28" y="24" width="44" height="20" rx="8" fill="#0f172a" />
         {/* Visor reflection */}
-        <rect x="30" y="26" width="18" height="3" rx="1.5" fill="white" opacity="0.08" />
+        <rect
+          x="30"
+          y="26"
+          width="18"
+          height="3"
+          rx="1.5"
+          fill="white"
+          opacity="0.08"
+        />
 
         {/* Eyes */}
         <g className="bot-eye-blink">
@@ -87,13 +120,35 @@ const RobotAvatar = ({ variant = 'floating', className = '' }) => {
         {/* --- Body --- */}
         <rect x="26" y="60" width="48" height="36" rx="12" fill="#e2e8f0" />
         {/* Body highlight */}
-        <rect x="30" y="63" width="20" height="4" rx="2" fill="white" opacity="0.45" />
+        <rect
+          x="30"
+          y="63"
+          width="20"
+          height="4"
+          rx="2"
+          fill="white"
+          opacity="0.45"
+        />
 
         {/* Chest panel */}
-        <rect x="34" y="68" width="32" height="20" rx="6" fill="#c7d2fe" opacity="0.7" />
+        <rect
+          x="34"
+          y="68"
+          width="32"
+          height="20"
+          rx="6"
+          fill="#c7d2fe"
+          opacity="0.7"
+        />
 
         {/* Chest light */}
-        <circle cx="50" cy="78" r="5" fill="#6366f1" className="bot-chest-glow" />
+        <circle
+          cx="50"
+          cy="78"
+          r="5"
+          fill="#6366f1"
+          className="bot-chest-glow"
+        />
         <circle cx="50" cy="78" r="2.5" fill="white" opacity="0.8" />
 
         {/* Body detail dots */}
