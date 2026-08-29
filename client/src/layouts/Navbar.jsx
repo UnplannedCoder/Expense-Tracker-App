@@ -1,26 +1,25 @@
-import React, { useContext } from 'react';
-import { Link } from 'react-router-dom';
-import { FaSun, FaMoon, FaSignOutAlt, FaBars } from 'react-icons/fa';
-import { AuthContext } from '../context/AuthContext';
-import { ThemeContext } from '../context/ThemeContext';
+import React, { useContext } from "react";
+import { Link } from "react-router-dom";
+import { FaSun, FaMoon, FaSignOutAlt, FaBars } from "react-icons/fa";
+import { AuthContext } from "../context/AuthContext";
+import { ThemeContext } from "../context/ThemeContext";
 
 const Navbar = ({ onMenuClick }) => {
   const { user, logout } = useContext(AuthContext);
   const { theme, toggleTheme } = useContext(ThemeContext);
 
   const getInitials = (name) => {
-    if (!name) return 'U';
+    if (!name) return "U";
     return name
-      .split(' ')
+      .split(" ")
       .map((n) => n[0])
       .slice(0, 2)
-      .join('')
+      .join("")
       .toUpperCase();
   };
 
   return (
     <nav className="h-14 sm:h-16 sticky top-0 z-30 flex items-center justify-between px-4 sm:px-6 bg-white dark:bg-slate-900 border-b border-slate-300 dark:border-slate-800 transition-colors duration-300">
-      
       {/* Left: hamburger (mobile only) + brand */}
       <div className="flex items-center space-x-3">
         {/* Hamburger — only on mobile/tablet */}
@@ -51,7 +50,7 @@ const Navbar = ({ onMenuClick }) => {
           className="p-2 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
           title="Toggle Theme"
         >
-          {theme === 'dark' ? <FaSun size={16} /> : <FaMoon size={16} />}
+          {theme === "dark" ? <FaSun size={16} /> : <FaMoon size={16} />}
         </button>
 
         {/* User Card */}
