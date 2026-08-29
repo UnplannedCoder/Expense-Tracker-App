@@ -1,12 +1,23 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback } from "react";
 import {
-  FaUpload, FaCamera, FaTimes, FaSpinner, FaCheckCircle,
-  FaExclamationTriangle, FaChevronDown, FaChevronUp,
-  FaWallet, FaArrowUp, FaArrowDown, FaPiggyBank, FaRedo,
-  FaFileImage, FaFilePdf,
-} from 'react-icons/fa';
-import api from '../services/api';
-import { pdfToText } from '../utils/pdfToText';
+  FaUpload,
+  FaCamera,
+  FaTimes,
+  FaSpinner,
+  FaCheckCircle,
+  FaExclamationTriangle,
+  FaChevronDown,
+  FaChevronUp,
+  FaWallet,
+  FaArrowUp,
+  FaArrowDown,
+  FaPiggyBank,
+  FaRedo,
+  FaFileImage,
+  FaFilePdf,
+} from "react-icons/fa";
+import api from "../services/api";
+import { pdfToText } from "../utils/pdfToText";
 
 /**
  * ImageAnalyzer
@@ -24,24 +35,24 @@ const MAX_FILE_MB = 10;
 const fileToBase64 = (file) =>
   new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.onload  = (e) => resolve(e.target.result); // full data-URI
+    reader.onload = (e) => resolve(e.target.result); // full data-URI
     reader.onerror = reject;
     reader.readAsDataURL(file);
   });
 
 const formatINR = (amount) =>
-  new Intl.NumberFormat('en-IN', {
-    style: 'currency',
-    currency: 'INR',
+  new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
     maximumFractionDigits: 2,
   }).format(Math.abs(amount));
 
 const DOC_TYPE_LABELS = {
-  bank_statement: 'Bank Statement',
-  payslip:        'Payslip / Salary Slip',
-  receipt:        'Receipt / Bill',
-  handwritten:    'Handwritten Note',
-  other:          'Financial Document',
+  bank_statement: "Bank Statement",
+  payslip: "Payslip / Salary Slip",
+  receipt: "Receipt / Bill",
+  handwritten: "Handwritten Note",
+  other: "Financial Document",
 };
 
 // ── Summary Card ─────────────────────────────────────────────────────────────
@@ -63,17 +74,17 @@ const SummaryCard = ({ label, value, icon: Icon, colorClass, bgClass }) => (
 // ── Main Component ────────────────────────────────────────────────────────────
 
 const ImageAnalyzer = () => {
-  const [isOpen,     setIsOpen]     = useState(false);
-  const [status,     setStatus]     = useState('idle'); // idle | uploading | done | error
+  const [isOpen, setIsOpen] = useState(false);
+  const [status, setStatus] = useState("idle"); // idle | uploading | done | error
   const [previewUrl, setPreviewUrl] = useState(null);
-  const [isPdf,      setIsPdf]      = useState(false);
-  const [pdfName,    setPdfName]    = useState('');
-  const [result,     setResult]     = useState(null);
-  const [errorMsg,   setErrorMsg]   = useState('');
-  const [showTxns,   setShowTxns]   = useState(false);
+  const [isPdf, setIsPdf] = useState(false);
+  const [pdfName, setPdfName] = useState("");
+  const [result, setResult] = useState(null);
+  const [errorMsg, setErrorMsg] = useState("");
+  const [showTxns, setShowTxns] = useState(false);
 
-  const fileInputRef   = useRef(null);
-  const pdfInputRef    = useRef(null);
+  const fileInputRef = useRef(null);
+  const pdfInputRef = useRef(null);
   const cameraInputRef = useRef(null);
 
   // ── Process selected file ───────────────────────────────────────────────
@@ -82,17 +93,19 @@ const ImageAnalyzer = () => {
 
     // Size check
     if (file.size > MAX_FILE_MB * 1024 * 1024) {
-      setErrorMsg(`File is too large. Please use a file under ${MAX_FILE_MB}MB.`);
-      setStatus('error');
+      setErrorMsg(
+        `File is too large. Please use a file under ${MAX_FILE_MB}MB.`,
+      );
+      setStatus("error");
       return;
     }
 
-    const filePdf = file.type === 'application/pdf';
+    const filePdf = file.type === "application/pdf";
     setIsPdf(filePdf);
-    setPdfName(filePdf ? file.name : '');
+    setPdfName(filePdf ? file.name : "");
     setPreviewUrl(filePdf ? null : null); // will be set below for images
-    setStatus('uploading');
-    setErrorMsg('');
+    setStatus("uploading");
+    setErrorMsg("");
     setResult(null);
 
     try {
@@ -103,45 +116,55 @@ const ImageAnalyzer = () => {
         try {
           extractedText = await pdfToText(file);
         } catch {
-          throw new Error('Could not read this PDF. Make sure it contains selectable text (not a scanned image).');
+          throw new Error(
+            "Could not read this PDF. Make sure it contains selectable text (not a scanned image).",
+          );
         }
 
         if (!extractedText || extractedText.trim().length < 20) {
-          throw new Error('This PDF appears to be a scanned image with no text layer. Please take a photo of it using "Take Photo" or "Upload Image" instead.');
+          throw new Error(
+            'This PDF appears to be a scanned image with no text layer. Please take a photo of it using "Take Photo" or "Upload Image" instead.',
+          );
         }
 
-        const res = await api.post('/image/analyze-text', {
+        const res = await api.post("/image/analyze-text", {
           text: extractedText,
           filename: file.name,
         });
 
         if (res.data.success) {
           setResult(res.data.data);
-          setStatus('done');
+          setStatus("done");
         } else {
-          throw new Error(res.data.message || 'Analysis failed');
+          throw new Error(res.data.message || "Analysis failed");
         }
       } else {
         // ── Image path: base64 encode and send as vision request ─────────
         const dataUrl = await fileToBase64(file);
         setPreviewUrl(dataUrl);
 
-        const [header, base64] = dataUrl.split(',');
-        const mimeType = header.match(/data:([^;]+)/)?.[1] || 'image/jpeg';
+        const [header, base64] = dataUrl.split(",");
+        const mimeType = header.match(/data:([^;]+)/)?.[1] || "image/jpeg";
 
-        const res = await api.post('/image/analyze', { image: base64, mimeType });
+        const res = await api.post("/image/analyze", {
+          image: base64,
+          mimeType,
+        });
 
         if (res.data.success) {
           setResult(res.data.data);
-          setStatus('done');
+          setStatus("done");
         } else {
-          throw new Error(res.data.message || 'Analysis failed');
+          throw new Error(res.data.message || "Analysis failed");
         }
       }
     } catch (err) {
-      const msg = err.response?.data?.message || err.message || 'Something went wrong. Please try again.';
+      const msg =
+        err.response?.data?.message ||
+        err.message ||
+        "Something went wrong. Please try again.";
       setErrorMsg(msg);
-      setStatus('error');
+      setStatus("error");
     }
   }, []);
 
@@ -149,29 +172,28 @@ const ImageAnalyzer = () => {
     const file = e.target.files?.[0];
     if (file) processFile(file);
     // Reset input so same file can be re-selected
-    e.target.value = '';
+    e.target.value = "";
   };
 
   const handleReset = () => {
-    setStatus('idle');
+    setStatus("idle");
     setPreviewUrl(null);
     setIsPdf(false);
-    setPdfName('');
+    setPdfName("");
     setResult(null);
-    setErrorMsg('');
+    setErrorMsg("");
     setShowTxns(false);
   };
 
   // ── Savings ratio colour ────────────────────────────────────────────────
   const savingsColor = (ratio) => {
-    if (ratio >= 20) return 'text-emerald-600 dark:text-emerald-400';
-    if (ratio >= 10) return 'text-amber-500 dark:text-amber-400';
-    return 'text-rose-600 dark:text-rose-400';
+    if (ratio >= 20) return "text-emerald-600 dark:text-emerald-400";
+    if (ratio >= 10) return "text-amber-500 dark:text-amber-400";
+    return "text-rose-600 dark:text-rose-400";
   };
 
   return (
     <div className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden">
-
       {/* ── Collapsible Header ─────────────────────────────────────────── */}
       <button
         onClick={() => setIsOpen((v) => !v)}
@@ -186,7 +208,8 @@ const ImageAnalyzer = () => {
               Smart Expense Analyzer
             </p>
             <p className="text-xs text-slate-400 dark:text-slate-500">
-              Upload a bank statement, payslip, or receipt to auto-extract your financials
+              Upload a bank statement, payslip, or receipt to auto-extract your
+              financials
             </p>
           </div>
         </div>
@@ -198,13 +221,13 @@ const ImageAnalyzer = () => {
       {/* ── Expandable Body ────────────────────────────────────────────── */}
       {isOpen && (
         <div className="border-t border-slate-100 dark:border-slate-800 p-6 space-y-5 animate-fade-in">
-
           {/* IDLE — upload buttons */}
-          {status === 'idle' && (
+          {status === "idle" && (
             <>
               <p className="text-sm text-slate-500 dark:text-slate-400">
-                Upload a photo of your bank statement, salary slip, or a bundle of receipts.
-                Our AI will extract all income and expense data automatically.
+                Upload a photo of your bank statement, salary slip, or a bundle
+                of receipts. Our AI will extract all income and expense data
+                automatically.
               </p>
               <div className="grid grid-cols-3 gap-3">
                 {/* Camera */}
@@ -215,7 +238,14 @@ const ImageAnalyzer = () => {
                   <FaCamera size={22} />
                   <span>Take Photo</span>
                 </button>
-                <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={handleFileChange} />
+                <input
+                  ref={cameraInputRef}
+                  type="file"
+                  accept="image/*"
+                  capture="environment"
+                  className="hidden"
+                  onChange={handleFileChange}
+                />
 
                 {/* Image upload */}
                 <button
@@ -225,7 +255,13 @@ const ImageAnalyzer = () => {
                   <FaUpload size={22} />
                   <span>Upload Image</span>
                 </button>
-                <input ref={fileInputRef} type="file" accept="image/jpeg,image/png,image/webp,image/gif" className="hidden" onChange={handleFileChange} />
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  className="hidden"
+                  onChange={handleFileChange}
+                />
 
                 {/* PDF upload */}
                 <button
@@ -235,64 +271,100 @@ const ImageAnalyzer = () => {
                   <FaFilePdf size={22} />
                   <span>Upload PDF</span>
                 </button>
-                <input ref={pdfInputRef} type="file" accept="application/pdf" className="hidden" onChange={handleFileChange} />
+                <input
+                  ref={pdfInputRef}
+                  type="file"
+                  accept="application/pdf"
+                  className="hidden"
+                  onChange={handleFileChange}
+                />
               </div>
               <p className="text-xs text-center text-slate-400 dark:text-slate-500">
-                Supports JPG, PNG, WebP, PDF · Max {MAX_FILE_MB}MB · Powered by Gemini Vision AI
+                Supports JPG, PNG, WebP, PDF · Max {MAX_FILE_MB}MB · Powered by
+                Gemini Vision AI
               </p>
             </>
           )}
 
           {/* UPLOADING — spinner */}
-          {status === 'uploading' && (
+          {status === "uploading" && (
             <div className="space-y-4 text-center py-4">
               {previewUrl ? (
-                <img src={previewUrl} alt="Preview" className="mx-auto max-h-44 w-full object-contain rounded-xl border border-slate-300 dark:border-slate-700" />
-              ) : isPdf && (
-                <div className="mx-auto flex flex-col items-center justify-center gap-2 max-h-44 h-32 rounded-xl border border-rose-200 dark:border-rose-800 bg-rose-50 dark:bg-rose-950/20 text-rose-500 dark:text-rose-400">
-                  <FaFilePdf size={36} />
-                  <p className="text-xs font-medium truncate max-w-[200px]">{pdfName}</p>
-                </div>
+                <img
+                  src={previewUrl}
+                  alt="Preview"
+                  className="mx-auto max-h-44 w-full object-contain rounded-xl border border-slate-300 dark:border-slate-700"
+                />
+              ) : (
+                isPdf && (
+                  <div className="mx-auto flex flex-col items-center justify-center gap-2 max-h-44 h-32 rounded-xl border border-rose-200 dark:border-rose-800 bg-rose-50 dark:bg-rose-950/20 text-rose-500 dark:text-rose-400">
+                    <FaFilePdf size={36} />
+                    <p className="text-xs font-medium truncate max-w-[200px]">
+                      {pdfName}
+                    </p>
+                  </div>
+                )
               )}
               <div className="flex items-center justify-center gap-2 text-violet-600 dark:text-violet-400 font-medium text-sm">
                 <FaSpinner className="animate-spin" size={16} />
                 <span>Analysing your document with AI...</span>
               </div>
-              <p className="text-xs text-slate-400 dark:text-slate-500">This usually takes 5–15 seconds</p>
+              <p className="text-xs text-slate-400 dark:text-slate-500">
+                This usually takes 5–15 seconds
+              </p>
             </div>
           )}
 
           {/* ERROR */}
-          {status === 'error' && (
+          {status === "error" && (
             <div className="space-y-4">
               {previewUrl ? (
-                <img src={previewUrl} alt="Preview" className="mx-auto max-h-44 w-full object-contain rounded-xl border border-slate-300 dark:border-slate-700" />
-              ) : isPdf && (
-                <div className="mx-auto flex flex-col items-center justify-center gap-2 max-h-44 h-32 rounded-xl border border-rose-200 dark:border-rose-800 bg-rose-50 dark:bg-rose-950/20 text-rose-500 dark:text-rose-400">
-                  <FaFilePdf size={36} />
-                  <p className="text-xs font-medium truncate max-w-[200px]">{pdfName}</p>
-                </div>
+                <img
+                  src={previewUrl}
+                  alt="Preview"
+                  className="mx-auto max-h-44 w-full object-contain rounded-xl border border-slate-300 dark:border-slate-700"
+                />
+              ) : (
+                isPdf && (
+                  <div className="mx-auto flex flex-col items-center justify-center gap-2 max-h-44 h-32 rounded-xl border border-rose-200 dark:border-rose-800 bg-rose-50 dark:bg-rose-950/20 text-rose-500 dark:text-rose-400">
+                    <FaFilePdf size={36} />
+                    <p className="text-xs font-medium truncate max-w-[200px]">
+                      {pdfName}
+                    </p>
+                  </div>
+                )
               )}
               <div className="flex items-start gap-2 text-rose-600 dark:text-rose-400 text-sm font-medium bg-rose-50 dark:bg-rose-950/30 border border-rose-100 dark:border-rose-900/30 rounded-xl px-4 py-3">
-                <FaExclamationTriangle size={14} className="mt-0.5 flex-shrink-0" />
+                <FaExclamationTriangle
+                  size={14}
+                  className="mt-0.5 flex-shrink-0"
+                />
                 <span>{errorMsg}</span>
               </div>
-              <button onClick={handleReset} className="w-full py-2.5 rounded-xl text-sm font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition flex items-center justify-center gap-2">
+              <button
+                onClick={handleReset}
+                className="w-full py-2.5 rounded-xl text-sm font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition flex items-center justify-center gap-2"
+              >
                 <FaRedo size={12} /> Try Again
               </button>
             </div>
           )}
 
           {/* DONE — results */}
-          {status === 'done' && result && (
+          {status === "done" && result && (
             <div className="space-y-5">
               {/* Document info */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 text-xs font-semibold">
                   <FaCheckCircle size={13} />
-                  <span>Analysis complete — {DOC_TYPE_LABELS[result.documentType] || 'Document'}</span>
+                  <span>
+                    Analysis complete —{" "}
+                    {DOC_TYPE_LABELS[result.documentType] || "Document"}
+                  </span>
                   {result.period && (
-                    <span className="text-slate-400 dark:text-slate-500 font-normal">· {result.period}</span>
+                    <span className="text-slate-400 dark:text-slate-500 font-normal">
+                      · {result.period}
+                    </span>
                   )}
                 </div>
                 <button
@@ -306,12 +378,18 @@ const ImageAnalyzer = () => {
 
               {/* Preview thumbnail */}
               {previewUrl ? (
-                <img src={previewUrl} alt="Analysed document" className="w-full max-h-36 object-contain rounded-xl border border-slate-300 dark:border-slate-700" />
-              ) : isPdf && (
-                <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-rose-200 dark:border-rose-800 bg-rose-50 dark:bg-rose-950/20 text-rose-500 dark:text-rose-400">
-                  <FaFilePdf size={22} className="flex-shrink-0" />
-                  <p className="text-xs font-medium truncate">{pdfName}</p>
-                </div>
+                <img
+                  src={previewUrl}
+                  alt="Analysed document"
+                  className="w-full max-h-36 object-contain rounded-xl border border-slate-300 dark:border-slate-700"
+                />
+              ) : (
+                isPdf && (
+                  <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-rose-200 dark:border-rose-800 bg-rose-50 dark:bg-rose-950/20 text-rose-500 dark:text-rose-400">
+                    <FaFilePdf size={22} className="flex-shrink-0" />
+                    <p className="text-xs font-medium truncate">{pdfName}</p>
+                  </div>
+                )
               )}
 
               {/* 4 summary cards */}
@@ -334,7 +412,11 @@ const ImageAnalyzer = () => {
                   label="Net Balance"
                   value={formatINR(result.netBalance)}
                   icon={FaWallet}
-                  colorClass={result.netBalance >= 0 ? 'text-indigo-600 dark:text-indigo-400' : 'text-rose-600 dark:text-rose-400'}
+                  colorClass={
+                    result.netBalance >= 0
+                      ? "text-indigo-600 dark:text-indigo-400"
+                      : "text-rose-600 dark:text-rose-400"
+                  }
                   bgClass="bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-700"
                 />
                 <SummaryCard
@@ -360,8 +442,14 @@ const ImageAnalyzer = () => {
                     onClick={() => setShowTxns((v) => !v)}
                     className="w-full flex items-center justify-between text-sm font-semibold text-slate-700 dark:text-slate-200 py-2 border-t border-slate-100 dark:border-slate-800"
                   >
-                    <span>Extracted Transactions ({result.transactions.length})</span>
-                    {showTxns ? <FaChevronUp size={12} /> : <FaChevronDown size={12} />}
+                    <span>
+                      Extracted Transactions ({result.transactions.length})
+                    </span>
+                    {showTxns ? (
+                      <FaChevronUp size={12} />
+                    ) : (
+                      <FaChevronDown size={12} />
+                    )}
                   </button>
 
                   {showTxns && (
@@ -372,16 +460,30 @@ const ImageAnalyzer = () => {
                           className="flex items-center justify-between py-2.5 px-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700"
                         >
                           <div className="flex items-center gap-2.5 min-w-0">
-                            <div className={`p-1.5 rounded-lg flex-shrink-0 ${tx.type === 'income' ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' : 'bg-rose-500/10 text-rose-600 dark:text-rose-400'}`}>
-                              {tx.type === 'income' ? <FaArrowUp size={10} /> : <FaArrowDown size={10} />}
+                            <div
+                              className={`p-1.5 rounded-lg flex-shrink-0 ${tx.type === "income" ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" : "bg-rose-500/10 text-rose-600 dark:text-rose-400"}`}
+                            >
+                              {tx.type === "income" ? (
+                                <FaArrowUp size={10} />
+                              ) : (
+                                <FaArrowDown size={10} />
+                              )}
                             </div>
                             <div className="min-w-0">
-                              <p className="text-xs font-semibold text-slate-700 dark:text-slate-200 truncate">{tx.description || tx.category}</p>
-                              <p className="text-xs text-slate-400 dark:text-slate-500">{tx.category}{tx.date ? ` · ${tx.date}` : ''}</p>
+                              <p className="text-xs font-semibold text-slate-700 dark:text-slate-200 truncate">
+                                {tx.description || tx.category}
+                              </p>
+                              <p className="text-xs text-slate-400 dark:text-slate-500">
+                                {tx.category}
+                                {tx.date ? ` · ${tx.date}` : ""}
+                              </p>
                             </div>
                           </div>
-                          <span className={`text-xs font-bold flex-shrink-0 ml-2 ${tx.type === 'income' ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
-                            {tx.type === 'income' ? '+' : '-'}{formatINR(tx.amount)}
+                          <span
+                            className={`text-xs font-bold flex-shrink-0 ml-2 ${tx.type === "income" ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}
+                          >
+                            {tx.type === "income" ? "+" : "-"}
+                            {formatINR(tx.amount)}
                           </span>
                         </div>
                       ))}
