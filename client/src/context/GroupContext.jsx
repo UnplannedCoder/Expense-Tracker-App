@@ -1,22 +1,22 @@
-import React, { createContext, useState, useCallback } from 'react';
-import api from '../services/api';
+import React, { createContext, useState, useCallback } from "react";
+import api from "../services/api";
 
 export const GroupContext = createContext();
 
 export const GroupProvider = ({ children }) => {
-  const [groups, setGroups]           = useState([]);
+  const [groups, setGroups] = useState([]);
   const [activeGroup, setActiveGroup] = useState(null); // currently open group detail
-  const [loading, setLoading]         = useState(false);
+  const [loading, setLoading] = useState(false);
   const [detailLoading, setDetailLoading] = useState(false);
 
   // ── list ────────────────────────────────────────────────────────────────────
   const fetchGroups = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await api.get('/groups');
+      const res = await api.get("/groups");
       if (res.data.success) setGroups(res.data.data);
     } catch (err) {
-      console.error('Error fetching groups:', err);
+      console.error("Error fetching groups:", err);
     } finally {
       setLoading(false);
     }
@@ -32,8 +32,11 @@ export const GroupProvider = ({ children }) => {
         return { success: true, data: res.data.data };
       }
     } catch (err) {
-      console.error('Error fetching group detail:', err);
-      return { success: false, error: err.response?.data?.message || 'Failed to load group.' };
+      console.error("Error fetching group detail:", err);
+      return {
+        success: false,
+        error: err.response?.data?.message || "Failed to load group.",
+      };
     } finally {
       setDetailLoading(false);
     }
@@ -42,13 +45,16 @@ export const GroupProvider = ({ children }) => {
   // ── create ───────────────────────────────────────────────────────────────────
   const createGroup = async (groupData) => {
     try {
-      const res = await api.post('/groups', groupData);
+      const res = await api.post("/groups", groupData);
       if (res.data.success) {
         await fetchGroups();
         return { success: true, data: res.data.data };
       }
     } catch (err) {
-      return { success: false, error: err.response?.data?.message || 'Failed to create group.' };
+      return {
+        success: false,
+        error: err.response?.data?.message || "Failed to create group.",
+      };
     }
   };
 
@@ -62,7 +68,10 @@ export const GroupProvider = ({ children }) => {
         return { success: true, data: res.data.data };
       }
     } catch (err) {
-      return { success: false, error: err.response?.data?.message || 'Failed to update group.' };
+      return {
+        success: false,
+        error: err.response?.data?.message || "Failed to update group.",
+      };
     }
   };
 
@@ -76,7 +85,10 @@ export const GroupProvider = ({ children }) => {
         return { success: true };
       }
     } catch (err) {
-      return { success: false, error: err.response?.data?.message || 'Failed to delete group.' };
+      return {
+        success: false,
+        error: err.response?.data?.message || "Failed to delete group.",
+      };
     }
   };
 
@@ -89,7 +101,10 @@ export const GroupProvider = ({ children }) => {
         return { success: true };
       }
     } catch (err) {
-      return { success: false, error: err.response?.data?.message || 'Failed to add member.' };
+      return {
+        success: false,
+        error: err.response?.data?.message || "Failed to add member.",
+      };
     }
   };
 
@@ -101,19 +116,27 @@ export const GroupProvider = ({ children }) => {
         return { success: true };
       }
     } catch (err) {
-      return { success: false, error: err.response?.data?.message || 'Failed to remove member.' };
+      return {
+        success: false,
+        error: err.response?.data?.message || "Failed to remove member.",
+      };
     }
   };
 
   const settleMember = async (groupId, memberId) => {
     try {
-      const res = await api.put(`/groups/${groupId}/members/${memberId}/settle`);
+      const res = await api.put(
+        `/groups/${groupId}/members/${memberId}/settle`,
+      );
       if (res.data.success) {
         await fetchGroupById(groupId);
         return { success: true };
       }
     } catch (err) {
-      return { success: false, error: err.response?.data?.message || 'Failed to settle member.' };
+      return {
+        success: false,
+        error: err.response?.data?.message || "Failed to settle member.",
+      };
     }
   };
 
@@ -127,7 +150,10 @@ export const GroupProvider = ({ children }) => {
         return { success: true, data: res.data.data };
       }
     } catch (err) {
-      return { success: false, error: err.response?.data?.message || 'Failed to add expense.' };
+      return {
+        success: false,
+        error: err.response?.data?.message || "Failed to add expense.",
+      };
     }
   };
 
@@ -140,7 +166,10 @@ export const GroupProvider = ({ children }) => {
         return { success: true };
       }
     } catch (err) {
-      return { success: false, error: err.response?.data?.message || 'Failed to delete expense.' };
+      return {
+        success: false,
+        error: err.response?.data?.message || "Failed to delete expense.",
+      };
     }
   };
 
