@@ -1,19 +1,33 @@
-import React, { useState, useContext, useEffect, useRef } from 'react';
-import { FaUser, FaSave, FaCoins, FaUpload, FaCamera, FaTimes, FaLink } from 'react-icons/fa';
-import { AuthContext } from '../../context/AuthContext';
-import fileToBase64 from '../../utils/fileToBase64';
+import React, { useState, useContext, useEffect, useRef } from "react";
+import {
+  FaUser,
+  FaSave,
+  FaCoins,
+  FaUpload,
+  FaCamera,
+  FaTimes,
+  FaLink,
+} from "react-icons/fa";
+import { AuthContext } from "../../context/AuthContext";
+import fileToBase64 from "../../utils/fileToBase64";
 
 const MAX_PROFILE_IMAGE_MB = 2;
-const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+const ACCEPTED_IMAGE_TYPES = [
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/gif",
+];
 
 const Profile = () => {
-  const { user, updateProfile, error, clearError, loading } = useContext(AuthContext);
+  const { user, updateProfile, error, clearError, loading } =
+    useContext(AuthContext);
 
-  const [name, setName] = useState('');
-  const [currency, setCurrency] = useState('USD');
-  const [profileImage, setProfileImage] = useState('');
-  const [successMsg, setSuccessMsg] = useState('');
-  const [formError, setFormError] = useState('');
+  const [name, setName] = useState("");
+  const [currency, setCurrency] = useState("USD");
+  const [profileImage, setProfileImage] = useState("");
+  const [successMsg, setSuccessMsg] = useState("");
+  const [formError, setFormError] = useState("");
   const [imageUploading, setImageUploading] = useState(false);
   const [showUrlInput, setShowUrlInput] = useState(false);
 
@@ -22,10 +36,12 @@ const Profile = () => {
 
   useEffect(() => {
     if (user) {
-      setName(user.name || '');
-      setCurrency(user.currency || 'USD');
-      setProfileImage(user.profileImage || '');
-      setShowUrlInput(Boolean(user.profileImage && !user.profileImage.startsWith('data:')));
+      setName(user.name || "");
+      setCurrency(user.currency || "USD");
+      setProfileImage(user.profileImage || "");
+      setShowUrlInput(
+        Boolean(user.profileImage && !user.profileImage.startsWith("data:")),
+      );
     }
   }, [user]);
 
@@ -37,16 +53,18 @@ const Profile = () => {
   const handleImageFile = async (file) => {
     if (!file) return;
 
-    setFormError('');
+    setFormError("");
     clearError();
 
     if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
-      setFormError('Please upload a JPEG, PNG, WebP, or GIF image.');
+      setFormError("Please upload a JPEG, PNG, WebP, or GIF image.");
       return;
     }
 
     if (file.size > MAX_PROFILE_IMAGE_MB * 1024 * 1024) {
-      setFormError(`Image is too large. Please use a file under ${MAX_PROFILE_IMAGE_MB}MB.`);
+      setFormError(
+        `Image is too large. Please use a file under ${MAX_PROFILE_IMAGE_MB}MB.`,
+      );
       return;
     }
 
@@ -56,7 +74,7 @@ const Profile = () => {
       setProfileImage(dataUrl);
       setShowUrlInput(false);
     } catch {
-      setFormError('Failed to read the image. Please try again.');
+      setFormError("Failed to read the image. Please try again.");
     } finally {
       setImageUploading(false);
     }
@@ -65,47 +83,49 @@ const Profile = () => {
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
     if (file) handleImageFile(file);
-    e.target.value = '';
+    e.target.value = "";
   };
 
   const handleRemovePhoto = () => {
-    setProfileImage('');
+    setProfileImage("");
     setShowUrlInput(false);
-    setFormError('');
+    setFormError("");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setSuccessMsg('');
-    setFormError('');
+    setSuccessMsg("");
+    setFormError("");
     clearError();
 
     if (!name) {
-      setFormError('Name cannot be empty');
+      setFormError("Name cannot be empty");
       return;
     }
 
     const result = await updateProfile({ name, currency, profileImage });
     if (result.success) {
-      setSuccessMsg('Profile updated successfully!');
-      setTimeout(() => setSuccessMsg(''), 4000);
+      setSuccessMsg("Profile updated successfully!");
+      setTimeout(() => setSuccessMsg(""), 4000);
     }
   };
 
   const getInitials = (n) => {
-    if (!n) return 'U';
+    if (!n) return "U";
     return n
-      .split(' ')
+      .split(" ")
       .map((i) => i[0])
       .slice(0, 2)
-      .join('')
+      .join("")
       .toUpperCase();
   };
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-100">My Profile</h1>
+        <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-100">
+          My Profile
+        </h1>
         <p className="text-slate-500 dark:text-slate-400 text-sm">
           Manage your personal details and account configurations
         </p>
@@ -137,10 +157,14 @@ const Profile = () => {
               </span>
             </button>
             <div className="text-center sm:text-left space-y-1">
-              <h3 className="font-bold text-slate-800 dark:text-slate-100 text-base">{name}</h3>
+              <h3 className="font-bold text-slate-800 dark:text-slate-100 text-base">
+                {name}
+              </h3>
               <p className="text-slate-400 text-sm">{user?.email}</p>
               <p className="text-xs text-slate-500">
-                {profileImage ? 'Click avatar to change photo' : 'Upload a photo or use initials'}
+                {profileImage
+                  ? "Click avatar to change photo"
+                  : "Upload a photo or use initials"}
               </p>
             </div>
           </div>
@@ -206,7 +230,7 @@ const Profile = () => {
               <input
                 ref={fileInputRef}
                 type="file"
-                accept={ACCEPTED_IMAGE_TYPES.join(',')}
+                accept={ACCEPTED_IMAGE_TYPES.join(",")}
                 onChange={handleFileChange}
                 className="hidden"
               />
@@ -232,7 +256,9 @@ const Profile = () => {
                     ) : (
                       <FaUpload size={14} />
                     )}
-                    <span>{imageUploading ? 'Processing...' : 'Upload Photo'}</span>
+                    <span>
+                      {imageUploading ? "Processing..." : "Upload Photo"}
+                    </span>
                   </button>
 
                   <button
@@ -264,7 +290,9 @@ const Profile = () => {
 
                 <div className="flex items-center gap-3">
                   <div className="flex-1 h-px bg-slate-200 dark:bg-slate-700" />
-                  <span className="text-xs text-slate-400 uppercase tracking-wider">or</span>
+                  <span className="text-xs text-slate-400 uppercase tracking-wider">
+                    or
+                  </span>
                   <div className="flex-1 h-px bg-slate-200 dark:bg-slate-700" />
                 </div>
 
@@ -274,13 +302,15 @@ const Profile = () => {
                   className="w-full inline-flex items-center justify-center gap-2 text-sm text-slate-500 hover:text-indigo-500 transition"
                 >
                   <FaLink size={12} />
-                  <span>{showUrlInput ? 'Hide image URL' : 'Use image URL instead'}</span>
+                  <span>
+                    {showUrlInput ? "Hide image URL" : "Use image URL instead"}
+                  </span>
                 </button>
 
                 {showUrlInput && (
                   <input
                     type="url"
-                    value={profileImage.startsWith('data:') ? '' : profileImage}
+                    value={profileImage.startsWith("data:") ? "" : profileImage}
                     onChange={(e) => setProfileImage(e.target.value)}
                     placeholder="https://example.com/avatar.jpg"
                     className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl px-4 py-3 text-sm outline-none transition"
