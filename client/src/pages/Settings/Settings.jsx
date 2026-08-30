@@ -1,17 +1,18 @@
-import React, { useState, useContext, useEffect } from 'react';
-import { FaLock, FaSave, FaSun, FaMoon } from 'react-icons/fa';
-import { AuthContext } from '../../context/AuthContext';
-import { ThemeContext } from '../../context/ThemeContext';
+import React, { useState, useContext, useEffect } from "react";
+import { FaLock, FaSave, FaSun, FaMoon } from "react-icons/fa";
+import { AuthContext } from "../../context/AuthContext";
+import { ThemeContext } from "../../context/ThemeContext";
 
 const Settings = () => {
-  const { changePassword, error, clearError, loading } = useContext(AuthContext);
+  const { changePassword, error, clearError, loading } =
+    useContext(AuthContext);
   const { theme, toggleTheme } = useContext(ThemeContext);
 
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [successMsg, setSuccessMsg] = useState('');
-  const [formError, setFormError] = useState('');
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [successMsg, setSuccessMsg] = useState("");
+  const [formError, setFormError] = useState("");
 
   // Clear errors/success on load
   useEffect(() => {
@@ -21,32 +22,32 @@ const Settings = () => {
 
   const handlePasswordSubmit = async (e) => {
     e.preventDefault();
-    setSuccessMsg('');
-    setFormError('');
+    setSuccessMsg("");
+    setFormError("");
     clearError();
 
     if (!currentPassword || !newPassword || !confirmPassword) {
-      setFormError('Please fill in all password fields');
+      setFormError("Please fill in all password fields");
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      setFormError('New passwords do not match');
+      setFormError("New passwords do not match");
       return;
     }
 
     if (newPassword.length < 6) {
-      setFormError('New password must be at least 6 characters');
+      setFormError("New password must be at least 6 characters");
       return;
     }
 
     const result = await changePassword(currentPassword, newPassword);
     if (result.success) {
-      setSuccessMsg('Password changed successfully!');
-      setCurrentPassword('');
-      setNewPassword('');
-      setConfirmPassword('');
-      setTimeout(() => setSuccessMsg(''), 4000);
+      setSuccessMsg("Password changed successfully!");
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+      setTimeout(() => setSuccessMsg(""), 4000);
     }
   };
 
@@ -54,7 +55,9 @@ const Settings = () => {
     <div className="max-w-3xl mx-auto space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-100">Settings</h1>
+        <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-100">
+          Settings
+        </h1>
         <p className="text-slate-500 dark:text-slate-400 text-sm">
           Customize application configurations and credentials security
         </p>
@@ -62,17 +65,23 @@ const Settings = () => {
 
       {/* Preferences Section */}
       <div className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-2xl shadow-sm p-6 sm:p-8 space-y-4">
-        <h2 className="text-base font-bold text-slate-800 dark:text-slate-100">App Preferences</h2>
+        <h2 className="text-base font-bold text-slate-800 dark:text-slate-100">
+          App Preferences
+        </h2>
         <div className="flex justify-between items-center py-3 border-t border-b border-slate-100 dark:border-slate-800">
           <div>
-            <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-150">Application Theme</h4>
-            <p className="text-xs text-slate-400">Switch between light mode and dark mode layouts</p>
+            <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-150">
+              Application Theme
+            </h4>
+            <p className="text-xs text-slate-400">
+              Switch between light mode and dark mode layouts
+            </p>
           </div>
           <button
             onClick={toggleTheme}
             className="flex items-center space-x-2 px-4 py-2 border border-slate-300 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-700 dark:text-slate-350 rounded-xl text-sm font-semibold hover:bg-slate-100 dark:hover:bg-slate-900 transition"
           >
-            {theme === 'dark' ? (
+            {theme === "dark" ? (
               <>
                 <FaSun size={14} className="text-amber-500" />
                 <span>Light Mode</span>
@@ -89,8 +98,10 @@ const Settings = () => {
 
       {/* Security Section (Change Password) */}
       <div className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-2xl shadow-sm p-6 sm:p-8 space-y-6">
-        <h2 className="text-base font-bold text-slate-800 dark:text-slate-100">Security Configuration</h2>
-        
+        <h2 className="text-base font-bold text-slate-800 dark:text-slate-100">
+          Security Configuration
+        </h2>
+
         {/* Feedback alerts */}
         {successMsg && (
           <div className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-sm p-3 rounded-xl">
