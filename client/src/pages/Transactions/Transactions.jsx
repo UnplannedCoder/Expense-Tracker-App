@@ -9,8 +9,8 @@ import {
 } from "react-icons/fa";
 import { TransactionContext } from "../../context/TransactionContext";
 import { CategoryContext } from "../../context/CategoryContext";
-import { AuthContext } from "../../context/AuthContext";
-import IconHelper from "../../components/common/IconHelper";
+import { AuthContext } from "../../context/AuthContext"
+import IconHelper from "../../components/common/IconHelper"
 
 const Transactions = () => {
   const { user } = useContext(AuthContext);
