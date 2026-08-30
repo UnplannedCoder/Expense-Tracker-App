@@ -16,8 +16,8 @@
 export const pdfToText = async (file) => {
   // Dynamic import: pdfjs-dist (~3 MB) is fetched on demand, not at startup
   const [pdfjsLib, { default: workerUrl }] = await Promise.all([
-    import('pdfjs-dist'),
-    import('pdfjs-dist/build/pdf.worker.mjs?url'),
+    import("pdfjs-dist"),
+    import("pdfjs-dist/build/pdf.worker.mjs?url"),
   ]);
 
   pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl;
@@ -29,9 +29,9 @@ export const pdfToText = async (file) => {
   for (let i = 1; i <= pdf.numPages; i++) {
     const page = await pdf.getPage(i);
     const content = await page.getTextContent();
-    const pageText = content.items.map((item) => item.str).join(' ');
+    const pageText = content.items.map((item) => item.str).join(" ");
     pageTexts.push(pageText);
   }
 
-  return pageTexts.join('\n\n');
+  return pageTexts.join("\n\n");
 };
