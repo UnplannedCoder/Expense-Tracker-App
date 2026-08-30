@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { FaPlus, FaEdit, FaTrash, FaPiggyBank } from 'react-icons/fa';
-import { BudgetContext } from '../../context/BudgetContext';
-import { CategoryContext } from '../../context/CategoryContext';
-import { AuthContext } from '../../context/AuthContext';
+import React, { useState, useEffect, useContext } from "react";
+import { FaPlus, FaEdit, FaTrash, FaPiggyBank } from "react-icons/fa";
+import { BudgetContext } from "../../context/BudgetContext";
+import { CategoryContext } from "../../context/CategoryContext";
+import { AuthContext } from "../../context/AuthContext";
 
 const Budgets = () => {
   const { user } = useContext(AuthContext);
@@ -24,16 +24,26 @@ const Budgets = () => {
 
   // Modal States
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalMode, setModalMode] = useState('add'); // 'add' or 'edit'
+  const [modalMode, setModalMode] = useState("add"); // 'add' or 'edit'
   const [editId, setEditId] = useState(null);
 
   // Form States
-  const [category, setCategory] = useState('');
-  const [limit, setLimit] = useState('');
+  const [category, setCategory] = useState("");
+  const [limit, setLimit] = useState("");
 
   const months = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
   ];
 
   // Fetch budgets when month/year changes
@@ -44,22 +54,22 @@ const Budgets = () => {
 
   // Set default category when categories load or modal opens
   useEffect(() => {
-    const expenseCats = categories.filter((cat) => cat.type === 'expense');
+    const expenseCats = categories.filter((cat) => cat.type === "expense");
     if (expenseCats.length > 0 && !category) {
       setCategory(expenseCats[0].name);
     }
   }, [categories, category]);
 
   const handleOpenAdd = () => {
-    setModalMode('add');
-    const expenseCats = categories.filter((cat) => cat.type === 'expense');
-    setCategory(expenseCats.length > 0 ? expenseCats[0].name : '');
-    setLimit('');
+    setModalMode("add");
+    const expenseCats = categories.filter((cat) => cat.type === "expense");
+    setCategory(expenseCats.length > 0 ? expenseCats[0].name : "");
+    setLimit("");
     setIsModalOpen(true);
   };
 
   const handleOpenEdit = (budget) => {
-    setModalMode('edit');
+    setModalMode("edit");
     setEditId(budget._id);
     setCategory(budget.category);
     setLimit(budget.limit.toString());
@@ -71,7 +81,7 @@ const Budgets = () => {
     if (!category || !limit) return;
 
     let result;
-    if (modalMode === 'add') {
+    if (modalMode === "add") {
       result = await addBudget({
         category,
         limit: parseFloat(limit),
@@ -90,13 +100,20 @@ const Budgets = () => {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this budget?')) {
+    if (window.confirm("Are you sure you want to delete this budget?")) {
       await removeBudget(id, month, year);
     }
   };
 
   const formatMoney = (amount) => {
-    const symbol = user?.currency === 'INR' ? '₹' : user?.currency === 'EUR' ? '€' : user?.currency === 'GBP' ? '£' : '$';
+    const symbol =
+      user?.currency === "INR"
+        ? "₹"
+        : user?.currency === "EUR"
+          ? "€"
+          : user?.currency === "GBP"
+            ? "£"
+            : "$";
     return `${symbol}${amount.toLocaleString(undefined, {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
@@ -105,17 +122,17 @@ const Budgets = () => {
 
   const getProgressColor = (spent, limit) => {
     const ratio = spent / limit;
-    if (ratio >= 0.9) return 'bg-rose-500';
-    if (ratio >= 0.7) return 'bg-amber-500';
-    return 'bg-emerald-500';
+    if (ratio >= 0.9) return "bg-rose-500";
+    if (ratio >= 0.7) return "bg-amber-500";
+    return "bg-emerald-500";
   };
 
   const getProgressText = (spent, limit) => {
     const ratio = spent / limit;
-    if (ratio >= 1) return 'Over Budget!';
-    if (ratio >= 0.9) return 'Critical Limit!';
-    if (ratio >= 0.7) return 'Approaching Limit';
-    return 'Within Budget';
+    if (ratio >= 1) return "Over Budget!";
+    if (ratio >= 0.9) return "Critical Limit!";
+    if (ratio >= 0.7) return "Approaching Limit";
+    return "Within Budget";
   };
 
   return (
@@ -123,7 +140,9 @@ const Budgets = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-slate-800 dark:text-slate-100">Monthly Budgets</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-800 dark:text-slate-100">
+            Monthly Budgets
+          </h1>
           <p className="text-slate-500 dark:text-slate-400 text-sm">
             Set and monitor category limits to manage spending
           </p>
@@ -148,7 +167,9 @@ const Budgets = () => {
               className="bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 focus:border-indigo-500 rounded-xl px-3 py-2.5 text-sm outline-none transition"
             >
               {months.map((m, idx) => (
-                <option key={m} value={idx + 1}>{m}</option>
+                <option key={m} value={idx + 1}>
+                  {m}
+                </option>
               ))}
             </select>
           </div>
@@ -175,7 +196,10 @@ const Budgets = () => {
       ) : budgets.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
           {budgets.map((b) => {
-            const percentage = Math.min(Math.round((b.spent / b.limit) * 100), 100);
+            const percentage = Math.min(
+              Math.round((b.spent / b.limit) * 100),
+              100,
+            );
             const ratio = b.spent / b.limit;
             return (
               <div
@@ -212,8 +236,12 @@ const Budgets = () => {
 
                   {/* Summary values */}
                   <div className="flex justify-between text-sm mb-2">
-                    <span className="text-slate-500 dark:text-slate-400">Spent: {formatMoney(b.spent)}</span>
-                    <span className="font-semibold text-slate-700 dark:text-slate-350">Limit: {formatMoney(b.limit)}</span>
+                    <span className="text-slate-500 dark:text-slate-400">
+                      Spent: {formatMoney(b.spent)}
+                    </span>
+                    <span className="font-semibold text-slate-700 dark:text-slate-350">
+                      Limit: {formatMoney(b.limit)}
+                    </span>
                   </div>
 
                   {/* Progress bar */}
@@ -221,7 +249,7 @@ const Budgets = () => {
                     <div
                       className={`h-full rounded-full transition-all duration-500 ${getProgressColor(
                         b.spent,
-                        b.limit
+                        b.limit,
                       )}`}
                       style={{ width: `${percentage}%` }}
                     />
@@ -231,7 +259,11 @@ const Budgets = () => {
                 <div className="flex justify-between items-center text-xs mt-3">
                   <span
                     className={`font-semibold ${
-                      ratio >= 0.9 ? 'text-rose-600' : ratio >= 0.7 ? 'text-amber-500' : 'text-emerald-500'
+                      ratio >= 0.9
+                        ? "text-rose-600"
+                        : ratio >= 0.7
+                          ? "text-amber-500"
+                          : "text-emerald-500"
                     }`}
                   >
                     {getProgressText(b.spent, b.limit)}
@@ -244,7 +276,8 @@ const Budgets = () => {
         </div>
       ) : (
         <div className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 py-16 rounded-2xl shadow-sm text-center text-slate-400 dark:text-slate-500 text-sm">
-          No budget limits defined for this month. Set monthly category limits to prevent overspending.
+          No budget limits defined for this month. Set monthly category limits
+          to prevent overspending.
         </div>
       )}
 
@@ -255,7 +288,9 @@ const Budgets = () => {
             {/* Modal Title */}
             <div className="px-6 py-4 border-b border-slate-300 dark:border-slate-800 flex justify-between items-center">
               <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">
-                {modalMode === 'add' ? 'Set Category Budget' : 'Edit Budget Limit'}
+                {modalMode === "add"
+                  ? "Set Category Budget"
+                  : "Edit Budget Limit"}
               </h3>
               <button
                 onClick={() => setIsModalOpen(false)}
@@ -269,16 +304,18 @@ const Budgets = () => {
             <form onSubmit={handleFormSubmit} className="p-6 space-y-4">
               {/* Category selector */}
               <div>
-                <label className="block text-xs text-slate-400 mb-1">Expense Category</label>
+                <label className="block text-xs text-slate-400 mb-1">
+                  Expense Category
+                </label>
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
                   className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 focus:border-indigo-500 rounded-xl px-4 py-2.5 text-sm outline-none transition disabled:opacity-50"
-                  disabled={modalMode === 'edit'}
+                  disabled={modalMode === "edit"}
                   required
                 >
                   {categories
-                    .filter((cat) => cat.type === 'expense')
+                    .filter((cat) => cat.type === "expense")
                     .map((cat) => (
                       <option key={cat._id} value={cat.name}>
                         {cat.name}
@@ -289,7 +326,9 @@ const Budgets = () => {
 
               {/* Limit input */}
               <div>
-                <label className="block text-xs text-slate-400 mb-1">Monthly Limit</label>
+                <label className="block text-xs text-slate-400 mb-1">
+                  Monthly Limit
+                </label>
                 <input
                   type="number"
                   min="0"
@@ -314,7 +353,7 @@ const Budgets = () => {
                   type="submit"
                   className="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold rounded-xl shadow-md shadow-indigo-600/10 transition"
                 >
-                  {modalMode === 'add' ? 'Save Budget' : 'Update Limit'}
+                  {modalMode === "add" ? "Save Budget" : "Update Limit"}
                 </button>
               </div>
             </form>
