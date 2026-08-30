@@ -10,20 +10,20 @@
  */
 
 const CURRENCY_SYMBOLS = {
-  INR: '₹',
-  USD: '$',
-  EUR: '€',
-  GBP: '£',
-  JPY: '¥',
-  CAD: 'CA$',
-  AUD: 'A$',
+  INR: "₹",
+  USD: "$",
+  EUR: "€",
+  GBP: "£",
+  JPY: "¥",
+  CAD: "CA$",
+  AUD: "A$",
 };
 
 /**
  * Returns the symbol for a given currency code.
  * Falls back to the code itself if unknown.
  */
-export const getCurrencySymbol = (currency = 'INR') =>
+export const getCurrencySymbol = (currency = "INR") =>
   CURRENCY_SYMBOLS[currency] || currency;
 
 /**
@@ -34,9 +34,9 @@ export const getCurrencySymbol = (currency = 'INR') =>
  * @param {object} options   - Optional overrides for Intl.NumberFormat
  * @returns {string}
  */
-export const formatMoney = (amount = 0, currency = 'INR', options = {}) => {
+export const formatMoney = (amount = 0, currency = "INR", options = {}) => {
   const symbol = getCurrencySymbol(currency);
-  const locale = currency === 'INR' ? 'en-IN' : 'en-US';
+  const locale = currency === "INR" ? "en-IN" : "en-US";
 
   const formatted = Math.abs(amount).toLocaleString(locale, {
     minimumFractionDigits: 2,
@@ -51,7 +51,7 @@ export const formatMoney = (amount = 0, currency = 'INR', options = {}) => {
  * Convenience: formats with sign prefix for income/expense display.
  * '+₹500.00' or '-₹500.00'
  */
-export const formatMoneyWithSign = (amount = 0, currency = 'INR') => {
-  const sign = amount >= 0 ? '+' : '-';
+export const formatMoneyWithSign = (amount = 0, currency = "INR") => {
+  const sign = amount >= 0 ? "+" : "-";
   return `${sign}${formatMoney(amount, currency)}`;
 };
