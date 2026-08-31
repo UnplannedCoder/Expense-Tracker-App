@@ -1,5 +1,5 @@
-const Budget = require('../models/Budget');
-const Transaction = require('../models/Transaction');
+const Budget = require("../models/Budget");
+const Transaction = require("../models/Transaction");
 
 // Helper to compute spent amount for a budget category in a month/year
 const calculateSpent = async (userId, category, month, year) => {
@@ -10,7 +10,7 @@ const calculateSpent = async (userId, category, month, year) => {
     {
       $match: {
         userId,
-        type: 'expense',
+        type: "expense",
         category,
         date: { $gte: startOfMonth, $lte: endOfMonth },
       },
@@ -18,7 +18,7 @@ const calculateSpent = async (userId, category, month, year) => {
     {
       $group: {
         _id: null,
-        totalSpent: { $sum: '$amount' },
+        totalSpent: { $sum: "$amount" },
       },
     },
   ]);
@@ -32,7 +32,9 @@ const calculateSpent = async (userId, category, month, year) => {
 const getBudgets = async (req, res, next) => {
   try {
     const now = new Date();
-    const month = req.query.month ? Number(req.query.month) : now.getMonth() + 1;
+    const month = req.query.month
+      ? Number(req.query.month)
+      : now.getMonth() + 1;
     const year = req.query.year ? Number(req.query.year) : now.getFullYear();
 
     const budgets = await Budget.find({
@@ -60,7 +62,7 @@ const createBudget = async (req, res, next) => {
 
     if (!category || limit === undefined || !month || !year) {
       res.status(400);
-      throw new Error('Please enter category, limit, month, and year');
+      throw new Error("Please enter category, limit, month, and year");
     }
 
     // Check if budget already exists for this category/month/year
@@ -73,7 +75,7 @@ const createBudget = async (req, res, next) => {
 
     if (budgetExists) {
       res.status(400);
-      throw new Error('Budget already set for this category and month');
+      throw new Error("Budget already set for this category and month");
     }
 
     // Calculate current spent for this category/month/year
@@ -90,7 +92,7 @@ const createBudget = async (req, res, next) => {
 
     res.status(201).json({
       success: true,
-      message: 'Budget created successfully',
+      message: "Budget created successfully",
       data: budget,
     });
   } catch (error) {
@@ -107,7 +109,7 @@ const updateBudget = async (req, res, next) => {
 
     if (limit === undefined) {
       res.status(400);
-      throw new Error('Please provide a new limit');
+      throw new Error("Please provide a new limit");
     }
 
     let budget = await Budget.findOne({
@@ -117,7 +119,7 @@ const updateBudget = async (req, res, next) => {
 
     if (!budget) {
       res.status(404);
-      throw new Error('Budget not found');
+      throw new Error("Budget not found");
     }
 
     budget.limit = Number(limit);
@@ -125,7 +127,7 @@ const updateBudget = async (req, res, next) => {
 
     res.json({
       success: true,
-      message: 'Budget updated successfully',
+      message: "Budget updated successfully",
       data: updatedBudget,
     });
   } catch (error) {
@@ -145,14 +147,14 @@ const deleteBudget = async (req, res, next) => {
 
     if (!budget) {
       res.status(404);
-      throw new Error('Budget not found');
+      throw new Error("Budget not found");
     }
 
     await budget.deleteOne();
 
     res.json({
       success: true,
-      message: 'Budget removed successfully',
+      message: "Budget removed successfully",
     });
   } catch (error) {
     next(error);
