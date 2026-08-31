@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 /**
  * Group.js
@@ -16,34 +16,42 @@ const mongoose = require('mongoose');
 
 const memberSchema = new mongoose.Schema(
   {
-    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
-    name:   { type: String, required: true, trim: true },
-    email:  { type: String, required: true, trim: true, lowercase: true },
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
+    name: { type: String, required: true, trim: true },
+    email: { type: String, required: true, trim: true, lowercase: true },
     // How much this member has already paid toward the group total
-    amountPaid:   { type: Number, default: 0, min: 0 },
+    amountPaid: { type: Number, default: 0, min: 0 },
     // How much this member owes after equal split is calculated
-    amountOwed:   { type: Number, default: 0, min: 0 },
+    amountOwed: { type: Number, default: 0, min: 0 },
     // Whether this member has settled their balance
-    isSettled:    { type: Boolean, default: false },
+    isSettled: { type: Boolean, default: false },
   },
-  { _id: true }
+  { _id: true },
 );
 
 const groupExpenseSchema = new mongoose.Schema(
   {
     // Who paid for this specific item
-    paidBy:       { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    paidByName:   { type: String, required: true },
-    description:  { type: String, required: true, trim: true },
-    amount:       { type: Number, required: true, min: 0 },
-    category:     { type: String, default: 'Others' },
-    date:         { type: Date,   default: Date.now },
+    paidBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    paidByName: { type: String, required: true },
+    description: { type: String, required: true, trim: true },
+    amount: { type: Number, required: true, min: 0 },
+    category: { type: String, default: "Others" },
+    date: { type: Date, default: Date.now },
     // Which member IDs this expense is split among (defaults to all members)
-    splitAmong:   [{ type: mongoose.Schema.Types.ObjectId }],
+    splitAmong: [{ type: mongoose.Schema.Types.ObjectId }],
     // Optional receipt image stored as base64 data-url or a URL string
-    receiptImage: { type: String, default: '' },
+    receiptImage: { type: String, default: "" },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const groupSchema = new mongoose.Schema(
@@ -51,7 +59,7 @@ const groupSchema = new mongoose.Schema(
     // Creator of the group
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
+      ref: "User",
       required: true,
     },
     name: {
@@ -61,21 +69,21 @@ const groupSchema = new mongoose.Schema(
     },
     description: {
       type: String,
-      default: '',
+      default: "",
       trim: true,
     },
     // emoji or icon identifier for the group
     icon: {
       type: String,
-      default: '👥',
+      default: "👥",
     },
     // Group type: trip | roommates | event | other
     type: {
       type: String,
-      enum: ['trip', 'roommates', 'event', 'other'],
-      default: 'other',
+      enum: ["trip", "roommates", "event", "other"],
+      default: "other",
     },
-    members:  [memberSchema],
+    members: [memberSchema],
     expenses: [groupExpenseSchema],
     // Quick-access total
     totalExpense: {
@@ -84,14 +92,14 @@ const groupSchema = new mongoose.Schema(
     },
     currency: {
       type: String,
-      default: 'INR',
+      default: "INR",
     },
     isArchived: {
       type: Boolean,
       default: false,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
-module.exports = mongoose.model('Group', groupSchema);
+module.exports = mongoose.model("Group", groupSchema);
