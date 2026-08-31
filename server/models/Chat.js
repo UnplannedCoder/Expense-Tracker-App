@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 /**
  * Chat model - stores every conversation message for a user.
@@ -9,14 +9,14 @@ const chatSchema = new mongoose.Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
+      ref: "User",
       required: true,
       index: true,
     },
     // 'user' = sent by the human, 'model' = sent by FinBot (Gemini)
     role: {
       type: String,
-      enum: ['user', 'model'],
+      enum: ["user", "model"],
       required: true,
     },
     message: {
@@ -27,7 +27,7 @@ const chatSchema = new mongoose.Schema(
   },
   {
     timestamps: true, // createdAt used as the message timestamp in UI
-  }
+  },
 );
 
-module.exports = mongoose.model('Chat', chatSchema);
+module.exports = mongoose.model("Chat", chatSchema);
