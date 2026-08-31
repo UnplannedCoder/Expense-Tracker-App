@@ -1,10 +1,10 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const budgetSchema = new mongoose.Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
+      ref: "User",
       required: true,
     },
     category: {
@@ -34,10 +34,13 @@ const budgetSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // A user can only have one budget per category per month/year
-budgetSchema.index({ userId: 1, category: 1, month: 1, year: 1 }, { unique: true });
+budgetSchema.index(
+  { userId: 1, category: 1, month: 1, year: 1 },
+  { unique: true },
+);
 
-module.exports = mongoose.model('Budget', budgetSchema);
+module.exports = mongoose.model("Budget", budgetSchema);
