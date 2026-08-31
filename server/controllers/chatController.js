@@ -1,7 +1,12 @@
-const Chat = require('../models/Chat');
-const { sendMessageToGemini } = require('../services/geminiService');
-const { buildFinancialContext } = require('../services/financialContextService');
-const { buildMarketContext, detectMarketIntent } = require('../services/marketDataService');
+const Chat = require("../models/Chat");
+const { sendMessageToGemini } = require("../services/geminiService");
+const {
+  buildFinancialContext,
+} = require("../services/financialContextService");
+const {
+  buildMarketContext,
+  detectMarketIntent,
+} = require("../services/marketDataService");
 
 /**
  * chatController.js
@@ -18,10 +23,14 @@ const sendMessage = async (req, res, next) => {
     const userId = req.user._id;
 
     // --- Validate input ---
-    if (!message || typeof message !== 'string' || message.trim().length === 0) {
+    if (
+      !message ||
+      typeof message !== "string" ||
+      message.trim().length === 0
+    ) {
       return res.status(400).json({
         success: false,
-        message: 'Message cannot be empty.',
+        message: "Message cannot be empty.",
       });
     }
 
@@ -30,7 +39,7 @@ const sendMessage = async (req, res, next) => {
     if (trimmedMessage.length > 2000) {
       return res.status(400).json({
         success: false,
-        message: 'Message is too long. Please keep it under 2000 characters.',
+        message: "Message is too long. Please keep it under 2000 characters.",
       });
     }
 
@@ -38,7 +47,8 @@ const sendMessage = async (req, res, next) => {
     if (!process.env.OPENROUTER_API_KEY) {
       return res.status(503).json({
         success: false,
-        message: 'FinBot is not configured. Please add OPENROUTER_API_KEY to server/.env and restart the server.',
+        message:
+          "FinBot is not configured. Please add OPENROUTER_API_KEY to server/.env and restart the server.",
       });
     }
 
@@ -54,34 +64,42 @@ const sendMessage = async (req, res, next) => {
     // --- Detect market intent early so we can log and gate the fetch ---
     const { isMarketQuery, detectedTerms } = detectMarketIntent(trimmedMessage);
     if (isMarketQuery) {
-      console.log(`[FinBot] Market query detected. Terms: ${detectedTerms.slice(0, 5).join(', ')}`);
+      console.log(
+        `[FinBot] Market query detected. Terms: ${detectedTerms.slice(0, 5).join(", ")}`,
+      );
     }
 
     // --- Fetch financial context + market context in parallel ---
     const [financialContext, marketContext] = await Promise.all([
       buildFinancialContext(userId),
-      isMarketQuery ? buildMarketContext(trimmedMessage) : Promise.resolve(null),
+      isMarketQuery
+        ? buildMarketContext(trimmedMessage)
+        : Promise.resolve(null),
     ]);
 
     // --- Combine contexts: financial first, then live market data ---
     const combinedContext = [financialContext, marketContext]
       .filter(Boolean)
-      .join('\n\n');
+      .join("\n\n");
 
     // --- Save user message to DB ---
     await Chat.create({
       userId,
-      role: 'user',
+      role: "user",
       message: trimmedMessage,
     });
 
     // --- Send to Gemini with combined context ---
-    const aiResponse = await sendMessageToGemini(trimmedMessage, combinedContext, conversationHistory);
+    const aiResponse = await sendMessageToGemini(
+      trimmedMessage,
+      combinedContext,
+      conversationHistory,
+    );
 
     // --- Save AI response to DB ---
     const savedResponse = await Chat.create({
       userId,
-      role: 'model',
+      role: "model",
       message: aiResponse,
     });
 
@@ -93,7 +111,7 @@ const sendMessage = async (req, res, next) => {
       },
     });
   } catch (error) {
-    console.error('chatController.sendMessage error:', error.message);
+    console.error("chatController.sendMessage error:", error.message);
 
     // All errors thrown by geminiService are already user-friendly — surface them directly
     // Only pass truly unexpected errors to the global error handler
@@ -126,7 +144,7 @@ const getChatHistory = async (req, res, next) => {
       data: messages,
     });
   } catch (error) {
-    console.error('chatController.getChatHistory error:', error.message);
+    console.error("chatController.getChatHistory error:", error.message);
     next(error);
   }
 };
@@ -141,10 +159,10 @@ const clearChatHistory = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      message: 'Chat history cleared successfully.',
+      message: "Chat history cleared successfully.",
     });
   } catch (error) {
-    console.error('chatController.clearChatHistory error:', error.message);
+    console.error("chatController.clearChatHistory error:", error.message);
     next(error);
   }
 };
