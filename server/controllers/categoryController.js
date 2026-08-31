@@ -1,4 +1,4 @@
-const Category = require('../models/Category');
+const Category = require("../models/Category");
 
 // @desc    Get all categories (default + custom)
 // @route   GET /api/v1/categories
@@ -28,32 +28,32 @@ const createCategory = async (req, res, next) => {
 
     if (!name || !type) {
       res.status(400);
-      throw new Error('Please enter category name and type');
+      throw new Error("Please enter category name and type");
     }
 
     // Check if category name already exists for this user of the same type
     const categoryExists = await Category.findOne({
       userId: req.user._id,
-      name: { $regex: new RegExp(`^${name}$`, 'i') },
+      name: { $regex: new RegExp(`^${name}$`, "i") },
       type,
     });
 
     if (categoryExists) {
       res.status(400);
-      throw new Error('Category already exists');
+      throw new Error("Category already exists");
     }
 
     const category = await Category.create({
       userId: req.user._id,
       name,
       type,
-      color: color || '#cbd5e1',
-      icon: icon || 'FaTag',
+      color: color || "#cbd5e1",
+      icon: icon || "FaTag",
     });
 
     res.status(201).json({
       success: true,
-      message: 'Category created successfully',
+      message: "Category created successfully",
       data: category,
     });
   } catch (error) {
@@ -75,7 +75,9 @@ const updateCategory = async (req, res, next) => {
 
     if (!category) {
       res.status(404);
-      throw new Error('Category not found or unauthorized to edit default categories');
+      throw new Error(
+        "Category not found or unauthorized to edit default categories",
+      );
     }
 
     category.name = name || category.name;
@@ -86,7 +88,7 @@ const updateCategory = async (req, res, next) => {
 
     res.json({
       success: true,
-      message: 'Category updated successfully',
+      message: "Category updated successfully",
       data: updatedCategory,
     });
   } catch (error) {
@@ -106,14 +108,16 @@ const deleteCategory = async (req, res, next) => {
 
     if (!category) {
       res.status(404);
-      throw new Error('Category not found or unauthorized to delete default categories');
+      throw new Error(
+        "Category not found or unauthorized to delete default categories",
+      );
     }
 
     await category.deleteOne();
 
     res.json({
       success: true,
-      message: 'Category removed successfully',
+      message: "Category removed successfully",
     });
   } catch (error) {
     next(error);
