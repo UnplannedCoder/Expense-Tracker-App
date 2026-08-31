@@ -1,5 +1,5 @@
-const Transaction = require('../models/Transaction');
-const PDFDocument = require('pdfkit');
+const Transaction = require("../models/Transaction");
+const PDFDocument = require("pdfkit");
 
 // ─── shared helper ────────────────────────────────────────────────────────────
 // Builds the summary object for a given set of transactions
@@ -9,18 +9,22 @@ const buildSummary = (transactions, month, year) => {
   const categoryBreakdown = {};
 
   transactions.forEach((tx) => {
-    if (tx.type === 'income') {
+    if (tx.type === "income") {
       totalIncome += tx.amount;
     } else {
       totalExpense += tx.amount;
-      categoryBreakdown[tx.category] = (categoryBreakdown[tx.category] || 0) + tx.amount;
+      categoryBreakdown[tx.category] =
+        (categoryBreakdown[tx.category] || 0) + tx.amount;
     }
   });
 
   const breakdownArray = Object.keys(categoryBreakdown).map((cat) => ({
     category: cat,
     amount: categoryBreakdown[cat],
-    percentage: totalExpense > 0 ? Math.round((categoryBreakdown[cat] / totalExpense) * 100) : 0,
+    percentage:
+      totalExpense > 0
+        ? Math.round((categoryBreakdown[cat] / totalExpense) * 100)
+        : 0,
   }));
 
   return {
@@ -39,7 +43,9 @@ const buildSummary = (transactions, month, year) => {
 const getMonthlyReport = async (req, res, next) => {
   try {
     const now = new Date();
-    const month = req.query.month ? Number(req.query.month) : now.getMonth() + 1;
+    const month = req.query.month
+      ? Number(req.query.month)
+      : now.getMonth() + 1;
     const year = req.query.year ? Number(req.query.year) : now.getFullYear();
 
     const startOfMonth = new Date(year, month - 1, 1);
@@ -68,7 +74,9 @@ const getDashboardSummary = async (req, res, next) => {
     const now = new Date();
 
     // Find the most recent transaction to know which month has actual data
-    const latest = await Transaction.findOne({ userId: req.user._id }).sort({ date: -1 });
+    const latest = await Transaction.findOne({ userId: req.user._id }).sort({
+      date: -1,
+    });
 
     let month, year;
     if (latest) {
@@ -127,20 +135,24 @@ const getYearlyReport = async (req, res, next) => {
 
     transactions.forEach((tx) => {
       const txMonth = new Date(tx.date).getMonth();
-      if (tx.type === 'income') {
+      if (tx.type === "income") {
         monthlyData[txMonth].income += tx.amount;
         totalIncome += tx.amount;
       } else {
         monthlyData[txMonth].expense += tx.amount;
         totalExpense += tx.amount;
-        categoryBreakdown[tx.category] = (categoryBreakdown[tx.category] || 0) + tx.amount;
+        categoryBreakdown[tx.category] =
+          (categoryBreakdown[tx.category] || 0) + tx.amount;
       }
     });
 
     const breakdownArray = Object.keys(categoryBreakdown).map((cat) => ({
       category: cat,
       amount: categoryBreakdown[cat],
-      percentage: totalExpense > 0 ? Math.round((categoryBreakdown[cat] / totalExpense) * 100) : 0,
+      percentage:
+        totalExpense > 0
+          ? Math.round((categoryBreakdown[cat] / totalExpense) * 100)
+          : 0,
     }));
 
     res.json({
@@ -164,23 +176,30 @@ const getYearlyReport = async (req, res, next) => {
 // @access  Private
 const exportCSV = async (req, res, next) => {
   try {
-    const transactions = await Transaction.find({ userId: req.user._id }).sort({ date: -1 });
+    const transactions = await Transaction.find({ userId: req.user._id }).sort({
+      date: -1,
+    });
 
-    let csvContent = 'Date,Type,Category,Amount,Payment Method,Description\r\n';
+    let csvContent = "Date,Type,Category,Amount,Payment Method,Description\r\n";
 
     transactions.forEach((tx) => {
-      const dateStr = new Date(tx.date).toISOString().split('T')[0];
+      const dateStr = new Date(tx.date).toISOString().split("T")[0];
       const typeStr = tx.type.toUpperCase();
       const catStr = tx.category;
       const amtStr = tx.amount.toString();
-      const payStr = tx.paymentMethod || 'Cash';
-      const descStr = tx.description ? `"${tx.description.replace(/"/g, '""')}"` : '""';
+      const payStr = tx.paymentMethod || "Cash";
+      const descStr = tx.description
+        ? `"${tx.description.replace(/"/g, '""')}"`
+        : '""';
 
       csvContent += `${dateStr},${typeStr},${catStr},${amtStr},${payStr},${descStr}\r\n`;
     });
 
-    res.setHeader('Content-Type', 'text/csv');
-    res.setHeader('Content-Disposition', 'attachment; filename=expense_report.csv');
+    res.setHeader("Content-Type", "text/csv");
+    res.setHeader(
+      "Content-Disposition",
+      "attachment; filename=expense_report.csv",
+    );
     res.status(200).send(csvContent);
   } catch (error) {
     next(error);
@@ -193,35 +212,40 @@ const exportCSV = async (req, res, next) => {
 const exportPDF = async (req, res, next) => {
   try {
     const user = req.user;
-    const transactions = await Transaction.find({ userId: user._id }).sort({ date: -1 }).limit(100);
+    const transactions = await Transaction.find({ userId: user._id })
+      .sort({ date: -1 })
+      .limit(100);
 
     // Calculate overall summaries
     const allTransactions = await Transaction.find({ userId: user._id });
     let totalIncome = 0;
     let totalExpense = 0;
     allTransactions.forEach((t) => {
-      if (t.type === 'income') totalIncome += t.amount;
+      if (t.type === "income") totalIncome += t.amount;
       else totalExpense += t.amount;
     });
 
     const doc = new PDFDocument({ margin: 50 });
 
-    res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `attachment; filename=financial_report.pdf`);
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename=financial_report.pdf`,
+    );
 
     doc.pipe(res);
 
     // Document Header
     doc
-      .fillColor('#4f46e5')
+      .fillColor("#4f46e5")
       .fontSize(24)
-      .text('EXPENSE TRACKER APP', { align: 'center' })
+      .text("EXPENSE TRACKER APP", { align: "center" })
       .moveDown(0.2);
-    
+
     doc
-      .fillColor('#374151')
+      .fillColor("#374151")
       .fontSize(14)
-      .text('Financial Statement & Summary', { align: 'center' })
+      .text("Financial Statement & Summary", { align: "center" })
       .moveDown(1.5);
 
     // User Details & Summary Boxes
@@ -235,33 +259,38 @@ const exportPDF = async (req, res, next) => {
 
     // Summary section
     doc
-      .fillColor('#10b981')
+      .fillColor("#10b981")
       .fontSize(12)
       .text(`Total Income: ${user.currency} ${totalIncome.toFixed(2)}`)
-      .fillColor('#ef4444')
+      .fillColor("#ef4444")
       .text(`Total Expenses: ${user.currency} ${totalExpense.toFixed(2)}`)
-      .fillColor('#374151')
-      .text(`Net Balance: ${user.currency} ${(totalIncome - totalExpense).toFixed(2)}`)
+      .fillColor("#374151")
+      .text(
+        `Net Balance: ${user.currency} ${(totalIncome - totalExpense).toFixed(2)}`,
+      )
       .moveDown(2);
 
     // Transactions Table Header
     doc
       .fontSize(12)
-      .fillColor('#111827')
-      .text('Recent Transactions (Max 100)', { underline: true })
+      .fillColor("#111827")
+      .text("Recent Transactions (Max 100)", { underline: true })
       .moveDown(0.5);
 
     // Draw Table Headers
     const tableTop = doc.y;
     doc
       .fontSize(10)
-      .text('Date', 50, tableTop)
-      .text('Type', 130, tableTop)
-      .text('Category', 200, tableTop)
-      .text('Amount', 320, tableTop)
-      .text('Description', 400, tableTop);
+      .text("Date", 50, tableTop)
+      .text("Type", 130, tableTop)
+      .text("Category", 200, tableTop)
+      .text("Amount", 320, tableTop)
+      .text("Description", 400, tableTop);
 
-    doc.moveTo(50, tableTop + 15).lineTo(550, tableTop + 15).stroke();
+    doc
+      .moveTo(50, tableTop + 15)
+      .lineTo(550, tableTop + 15)
+      .stroke();
 
     let y = tableTop + 25;
     transactions.forEach((tx) => {
@@ -272,17 +301,17 @@ const exportPDF = async (req, res, next) => {
       }
 
       const formattedDate = new Date(tx.date).toLocaleDateString();
-      const color = tx.type === 'income' ? '#10b981' : '#ef4444';
+      const color = tx.type === "income" ? "#10b981" : "#ef4444";
 
       doc
-        .fillColor('#374151')
+        .fillColor("#374151")
         .text(formattedDate, 50, y)
         .fillColor(color)
         .text(tx.type.toUpperCase(), 130, y)
-        .fillColor('#374151')
+        .fillColor("#374151")
         .text(tx.category, 200, y)
         .text(`${user.currency} ${tx.amount.toFixed(2)}`, 320, y)
-        .text(tx.description || '-', 400, y, { width: 150, height: 15 });
+        .text(tx.description || "-", 400, y, { width: 150, height: 15 });
 
       y += 20;
     });
