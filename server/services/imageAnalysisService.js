@@ -10,8 +10,8 @@
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
-const OPENROUTER_BASE_URL = 'https://openrouter.ai/api/v1/chat/completions';
-const MODEL = 'google/gemini-2.5-flash';
+const OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1/chat/completions";
+const MODEL = "google/gemini-2.5-flash";
 
 // ─── System prompt for financial IMAGE extraction ─────────────────────────────
 const IMAGE_EXTRACTION_PROMPT = `You are a precise financial data extractor. The user has uploaded an image that may be a bank statement, payslip, salary slip, expense receipt, handwritten budget note, or any financial document.
@@ -92,10 +92,12 @@ Respond with ONLY valid JSON in this exact format (no markdown, no explanation o
 }`;
 
 // ─── Shared fetch helper ──────────────────────────────────────────────────────
-const postToOpenRouter = async (messages, title = 'SpendWise Analyzer') => {
+const postToOpenRouter = async (messages, title = "SpendWise Analyzer") => {
   const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) {
-    throw new Error('OPENROUTER_API_KEY is not configured. Add it to server/.env');
+    throw new Error(
+      "OPENROUTER_API_KEY is not configured. Add it to server/.env",
+    );
   }
 
   const body = JSON.stringify({
@@ -107,13 +109,17 @@ const postToOpenRouter = async (messages, title = 'SpendWise Analyzer') => {
 
   const headers = {
     Authorization: `Bearer ${apiKey}`,
-    'Content-Type': 'application/json',
-    'HTTP-Referer': 'http://localhost:5173',
-    'X-Title': title,
+    "Content-Type": "application/json",
+    "HTTP-Referer": "http://localhost:5173",
+    "X-Title": title,
   };
 
-  if (typeof fetch !== 'undefined') {
-    const res = await fetch(OPENROUTER_BASE_URL, { method: 'POST', headers, body });
+  if (typeof fetch !== "undefined") {
+    const res = await fetch(OPENROUTER_BASE_URL, {
+      method: "POST",
+      headers,
+      body,
+    });
     const data = await res.json();
     if (!res.ok) {
       throw new Error(data?.error?.message || `HTTP ${res.status}`);
@@ -122,78 +128,82 @@ const postToOpenRouter = async (messages, title = 'SpendWise Analyzer') => {
   }
 
   // Node < 18 fallback
-  const https = require('https');
+  const https = require("https");
   return new Promise((resolve, reject) => {
     const url = new URL(OPENROUTER_BASE_URL);
     const req = https.request(
       {
         hostname: url.hostname,
         path: url.pathname,
-        method: 'POST',
-        headers: { ...headers, 'Content-Length': Buffer.byteLength(body) },
+        method: "POST",
+        headers: { ...headers, "Content-Length": Buffer.byteLength(body) },
       },
       (res) => {
-        let raw = '';
-        res.on('data', (c) => (raw += c));
-        res.on('end', () => {
+        let raw = "";
+        res.on("data", (c) => (raw += c));
+        res.on("end", () => {
           try {
             const data = JSON.parse(raw);
             if (res.statusCode >= 400) {
-              reject(new Error(data?.error?.message || `HTTP ${res.statusCode}`));
+              reject(
+                new Error(data?.error?.message || `HTTP ${res.statusCode}`),
+              );
             } else {
               resolve(data);
             }
           } catch {
-            reject(new Error(`Bad JSON from OpenRouter: ${raw.substring(0, 200)}`));
+            reject(
+              new Error(`Bad JSON from OpenRouter: ${raw.substring(0, 200)}`),
+            );
           }
         });
-      }
+      },
     );
-    req.on('error', reject);
+    req.on("error", reject);
     req.write(body);
     req.end();
   });
 };
 
 // ─── Vision request (images) ──────────────────────────────────────────────────
-const callOpenRouterVision = (base64Image, mimeType = 'image/jpeg') => {
+const callOpenRouterVision = (base64Image, mimeType = "image/jpeg") => {
   const messages = [
     {
-      role: 'user',
+      role: "user",
       content: [
         {
-          type: 'image_url',
+          type: "image_url",
           image_url: { url: `data:${mimeType};base64,${base64Image}` },
         },
-        { type: 'text', text: IMAGE_EXTRACTION_PROMPT },
+        { type: "text", text: IMAGE_EXTRACTION_PROMPT },
       ],
     },
   ];
-  return postToOpenRouter(messages, 'SpendWise Image Analyzer');
+  return postToOpenRouter(messages, "SpendWise Image Analyzer");
 };
 
 // ─── Text request (PDFs with text layer) ──────────────────────────────────────
-const callOpenRouterText = (documentText, filename = 'document.pdf') => {
+const callOpenRouterText = (documentText, filename = "document.pdf") => {
   const userMessage = `Filename: ${filename}\n\n--- PDF TEXT CONTENT START ---\n${documentText}\n--- PDF TEXT CONTENT END ---`;
   const messages = [
     {
-      role: 'user',
+      role: "user",
       content: [
-        { type: 'text', text: TEXT_EXTRACTION_PROMPT },
-        { type: 'text', text: userMessage },
+        { type: "text", text: TEXT_EXTRACTION_PROMPT },
+        { type: "text", text: userMessage },
       ],
     },
   ];
-  return postToOpenRouter(messages, 'SpendWise PDF Analyzer');
+  return postToOpenRouter(messages, "SpendWise PDF Analyzer");
 };
 
 // ─── Parse the AI response text into a clean JS object ───────────────────────
 const parseExtractionResult = (text) => {
   // Strip any markdown code fences the model might add despite instructions
   const cleaned = text
-    .replace(/^```json\s*/i, '')
-    .replace(/^```\s*/i, '')
-    .replace(/```\s*$/i, '')
+    .replace(/^```json\s*/i, "")
+    .replace(/^```\s*/i, "")
+    .replace(/```\s*$/i, "")
     .trim();
 
   const parsed = JSON.parse(cleaned);
@@ -201,23 +211,24 @@ const parseExtractionResult = (text) => {
   // Ensure numeric fields are actually numbers, not strings
   const toNum = (v) => Math.max(0, parseFloat(v) || 0);
 
-  const totalIncome  = toNum(parsed.totalIncome);
+  const totalIncome = toNum(parsed.totalIncome);
   const totalExpense = toNum(parsed.totalExpense);
-  const netBalance   = totalIncome - totalExpense;
-  const savingsRatio = totalIncome > 0
-    ? Math.round((netBalance / totalIncome) * 100 * 100) / 100
-    : 0;
+  const netBalance = totalIncome - totalExpense;
+  const savingsRatio =
+    totalIncome > 0
+      ? Math.round((netBalance / totalIncome) * 100 * 100) / 100
+      : 0;
 
   return {
-    totalIncome:  Math.round(totalIncome  * 100) / 100,
+    totalIncome: Math.round(totalIncome * 100) / 100,
     totalExpense: Math.round(totalExpense * 100) / 100,
-    netBalance:   Math.round(netBalance   * 100) / 100,
+    netBalance: Math.round(netBalance * 100) / 100,
     savingsRatio,
-    currency:     parsed.currency     || 'INR',
-    documentType: parsed.documentType || 'other',
-    period:       parsed.period       || null,
+    currency: parsed.currency || "INR",
+    documentType: parsed.documentType || "other",
+    period: parsed.period || null,
     transactions: Array.isArray(parsed.transactions) ? parsed.transactions : [],
-    note:         parsed.note         || '',
+    note: parsed.note || "",
   };
 };
 
@@ -230,27 +241,36 @@ const parseExtractionResult = (text) => {
  * @param {string} mimeType     — e.g. 'image/jpeg', 'image/png', 'image/webp'
  * @returns {Promise<Object>}
  */
-const analyzeFinancialImage = async (base64Image, mimeType = 'image/jpeg') => {
-  if (!base64Image || typeof base64Image !== 'string') {
-    throw new Error('Invalid image data — base64 string required');
+const analyzeFinancialImage = async (base64Image, mimeType = "image/jpeg") => {
+  if (!base64Image || typeof base64Image !== "string") {
+    throw new Error("Invalid image data — base64 string required");
   }
 
-  const cleanBase64 = base64Image.replace(/^data:[^;]+;base64,/, '');
+  const cleanBase64 = base64Image.replace(/^data:[^;]+;base64,/, "");
 
-  console.log(`[ImageAnalysis] Processing image (mime: ${mimeType}, size: ${Math.round(cleanBase64.length / 1024)}KB base64)`);
+  console.log(
+    `[ImageAnalysis] Processing image (mime: ${mimeType}, size: ${Math.round(cleanBase64.length / 1024)}KB base64)`,
+  );
 
   const response = await callOpenRouterVision(cleanBase64, mimeType);
 
   const rawText = response?.choices?.[0]?.message?.content;
-  if (!rawText) throw new Error('Empty response from AI model');
+  if (!rawText) throw new Error("Empty response from AI model");
 
   try {
     const result = parseExtractionResult(rawText);
-    console.log(`[ImageAnalysis] Extracted — Income: ${result.totalIncome}, Expense: ${result.totalExpense}, Transactions: ${result.transactions.length}`);
+    console.log(
+      `[ImageAnalysis] Extracted — Income: ${result.totalIncome}, Expense: ${result.totalExpense}, Transactions: ${result.transactions.length}`,
+    );
     return result;
   } catch {
-    console.error('[ImageAnalysis] JSON parse failed. Raw response:', rawText.substring(0, 300));
-    throw new Error('Could not parse financial data from the image. Please try a clearer photo.');
+    console.error(
+      "[ImageAnalysis] JSON parse failed. Raw response:",
+      rawText.substring(0, 300),
+    );
+    throw new Error(
+      "Could not parse financial data from the image. Please try a clearer photo.",
+    );
   }
 };
 
@@ -263,25 +283,34 @@ const analyzeFinancialImage = async (base64Image, mimeType = 'image/jpeg') => {
  * @param {string} filename  — original filename for AI context
  * @returns {Promise<Object>}
  */
-const analyzeFinancialText = async (text, filename = 'document.pdf') => {
-  if (!text || typeof text !== 'string' || text.trim().length === 0) {
-    throw new Error('No text content provided for analysis');
+const analyzeFinancialText = async (text, filename = "document.pdf") => {
+  if (!text || typeof text !== "string" || text.trim().length === 0) {
+    throw new Error("No text content provided for analysis");
   }
 
-  console.log(`[ImageAnalysis] Processing PDF text (file: ${filename}, chars: ${text.length})`);
+  console.log(
+    `[ImageAnalysis] Processing PDF text (file: ${filename}, chars: ${text.length})`,
+  );
 
   const response = await callOpenRouterText(text, filename);
 
   const rawText = response?.choices?.[0]?.message?.content;
-  if (!rawText) throw new Error('Empty response from AI model');
+  if (!rawText) throw new Error("Empty response from AI model");
 
   try {
     const result = parseExtractionResult(rawText);
-    console.log(`[ImageAnalysis] PDF extracted — Income: ${result.totalIncome}, Expense: ${result.totalExpense}, Transactions: ${result.transactions.length}`);
+    console.log(
+      `[ImageAnalysis] PDF extracted — Income: ${result.totalIncome}, Expense: ${result.totalExpense}, Transactions: ${result.transactions.length}`,
+    );
     return result;
   } catch {
-    console.error('[ImageAnalysis] JSON parse failed. Raw response:', rawText.substring(0, 300));
-    throw new Error('Could not parse financial data from the PDF. Please ensure the document contains readable text.');
+    console.error(
+      "[ImageAnalysis] JSON parse failed. Raw response:",
+      rawText.substring(0, 300),
+    );
+    throw new Error(
+      "Could not parse financial data from the PDF. Please ensure the document contains readable text.",
+    );
   }
 };
 
