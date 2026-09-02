@@ -16,6 +16,7 @@ A full-stack expense tracking application built with React and Express that help
 ## Tech Stack
 
 ### Frontend
+
 - React
 - Vite
 - React Router
@@ -24,6 +25,7 @@ A full-stack expense tracking application built with React and Express that help
 - Axios
 
 ### Backend
+
 - Node.js
 - Express
 - MongoDB with Mongoose
@@ -40,6 +42,7 @@ server/        # Express backend
 ## Prerequisites
 
 Make sure you have the following installed:
+
 - Node.js (v18 or newer recommended)
 - npm
 - MongoDB instance or MongoDB Atlas connection string
@@ -97,11 +100,13 @@ The frontend should be available at `http://localhost:5173` and the backend at `
 ## Available Scripts
 
 ### Client
+
 - `npm run dev` - start the Vite development server
 - `npm run build` - create a production build
 - `npm run preview` - preview the production build
 
 ### Server
+
 - `npm run dev` - start the backend with nodemon
 - `npm start` - start the backend normally
 
